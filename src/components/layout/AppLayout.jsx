@@ -44,10 +44,10 @@ export default function AppLayout() {
       const saved = scrollPositions.current[next] ?? 0;
       // Pequeno delay para garantir que o conteúdo renderizou
       requestAnimationFrame(() => {
-        window.scrollTo({ top: saved, behavior: 'instant' });
+        window.scrollTo({ top: saved, behavior: 'auto' });
       });
     } else {
-      window.scrollTo({ top: 0, behavior: 'instant' });
+      window.scrollTo({ top: 0, behavior: 'auto' });
     }
   }, [location.pathname]);
 
