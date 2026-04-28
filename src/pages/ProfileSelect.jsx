@@ -470,7 +470,7 @@ export default function ProfileSelect() {
         <img
           src="/cristofy-logo.png"
           alt="CristoFy"
-          className="h-12 w-auto mx-auto mb-8 object-contain"
+          className="h-auto w-[260px] md:w-[360px] mx-auto mb-8 object-contain"
         />
         <h1 className="text-3xl md:text-4xl font-semibold text-white">Quem está assistindo?</h1>
       </div>
