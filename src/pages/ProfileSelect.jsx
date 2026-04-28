@@ -468,7 +468,7 @@ export default function ProfileSelect() {
     <div className="min-h-screen bg-[#141414] flex flex-col items-center justify-center p-4">
       <div className="mb-12 text-center">
         <div className="mb-8 text-4xl md:text-5xl font-black tracking-tight">
-          <span className="text-[#0099FF]">Cristo</span>
+          <span className="text-[#0057FF]">Cristo</span>
           <span className="text-white">Fy</span>
         </div>
         <h1 className="text-3xl md:text-4xl font-semibold text-white">Quem está assistindo?</h1>
