@@ -137,8 +137,8 @@ export default function Subscription() {
           </button>
           <div>
             <h1 className="text-3xl font-black">
-              <span className="text-[#E50914]">Desenhos</span>
-              <span className="text-[#FFC107]">Flix</span>
+              <span className="text-[#E50914]">Cristo</span>
+              <span className="text-[#FFC107]">Fy</span>
               <span className="text-white"> Premium</span>
             </h1>
             <p className="text-gray-400 mt-1">Escolha o plano ideal para você</p>

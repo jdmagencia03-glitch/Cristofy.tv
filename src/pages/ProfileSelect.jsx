@@ -461,7 +461,7 @@ export default function ProfileSelect() {
       <div className="mb-12 text-center">
         <img
           src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69b61a29474f4e54b5af9b86/acb41898f_desenhosflix.png"
-          alt="DesenhosFlix"
+          alt="CristoFy"
           className="h-12 w-auto mx-auto mb-8 object-contain"
         />
         <h1 className="text-3xl md:text-4xl font-semibold text-white">Quem está assistindo?</h1>

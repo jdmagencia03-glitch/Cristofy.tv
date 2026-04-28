@@ -10,8 +10,8 @@ export default function SubscriptionWall({ isTrial = false, daysLeft = 0 }) {
       <div className="max-w-md w-full text-center">
         {/* Logo */}
         <h1 className="text-3xl font-black mb-8">
-          <span className="text-[#E50914]">Desenhos</span>
-          <span className="text-[#FFC107]">Flix</span>
+          <span className="text-[#E50914]">Cristo</span>
+          <span className="text-[#FFC107]">Fy</span>
         </h1>
 
         <div className="bg-[#1A1A1A] border border-white/10 rounded-2xl p-8 shadow-2xl">
@@ -30,7 +30,7 @@ export default function SubscriptionWall({ isTrial = false, daysLeft = 0 }) {
             <>
               <h2 className="text-xl font-bold text-white mb-2">Assinatura necessária</h2>
               <p className="text-gray-400 text-sm leading-relaxed mb-6">
-                Para assistir aos desenhos no DesenhosFlix é necessário ter uma assinatura ativa.
+                Para assistir aos desenhos no CristoFy é necessário ter uma assinatura ativa.
               </p>
             </>
           )}

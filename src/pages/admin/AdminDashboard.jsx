@@ -41,7 +41,7 @@ export default function AdminDashboard() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold">Painel Administrativo</h1>
-            <p className="text-gray-400 text-sm mt-1">Gerencie todo o conteúdo do DesenhosFlix</p>
+            <p className="text-gray-400 text-sm mt-1">Gerencie todo o conteúdo do CristoFy</p>
           </div>
         </div>
 

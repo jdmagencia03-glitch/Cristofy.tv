@@ -45,7 +45,7 @@ export default function Navbar({ isStackRoute = false }) {
           <Link to="/Home" className="hidden md:flex items-center ml-4">
             <img
               src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69b61a29474f4e54b5af9b86/acb41898f_desenhosflix.png"
-              alt="DesenhosFlix"
+              alt="CristoFy"
               className="h-10 w-auto object-contain"
             />
           </Link>
@@ -68,7 +68,7 @@ export default function Navbar({ isStackRoute = false }) {
             <Link to="/Home" className="flex items-center shrink-0">
               <img
                 src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69b61a29474f4e54b5af9b86/acb41898f_desenhosflix.png"
-                alt="DesenhosFlix"
+                alt="CristoFy"
                 className="h-10 md:h-12 w-auto object-contain"
               />
             </Link>

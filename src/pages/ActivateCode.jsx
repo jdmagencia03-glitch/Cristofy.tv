@@ -80,8 +80,8 @@ export default function ActivateCode() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-black mb-2">
-            <span className="text-[#E50914]">Desenhos</span>
-            <span className="text-[#FFC107]">Flix</span>
+            <span className="text-[#E50914]">Cristo</span>
+            <span className="text-[#FFC107]">Fy</span>
           </h1>
           <p className="text-gray-400">Ative sua conta com um código de acesso</p>
         </div>

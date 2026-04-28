@@ -171,7 +171,7 @@ export default function Home() {
         {allSeries.length === 0 && (
           <div className="flex flex-col items-center justify-center py-32 px-4">
             <div className="text-6xl mb-6">🎬</div>
-            <h2 className="text-2xl font-bold mb-2">Bem-vindo ao DesenhosFlix!</h2>
+            <h2 className="text-2xl font-bold mb-2">Bem-vindo ao CristoFy!</h2>
             <p className="text-gray-400 text-center max-w-md">
               Nenhuma série disponível ainda. O administrador precisa adicionar conteúdo no painel admin.
             </p>
@@ -180,7 +180,7 @@ export default function Home() {
       </div>
 
       <footer className="border-t border-white/5 mt-16 py-8 px-4 md:px-12 text-center text-xs text-gray-500">
-        <p>&copy; {new Date().getFullYear()} DesenhosFlix. Todos os direitos reservados.</p>
+        <p>&copy; {new Date().getFullYear()} CristoFy. Todos os direitos reservados.</p>
       </footer>
     </div>
   );
