@@ -27,7 +27,6 @@ import AdminEpisodeCreator from './pages/admin/AdminEpisodeCreator';
 import AdminSubscriptions from './pages/admin/AdminSubscriptions';
 import AdminMetrics from './pages/admin/AdminMetrics';
 import AdminBanner from './pages/admin/AdminBanner';
-import AdminFirebaseNotice from './pages/admin/AdminFirebaseNotice';
 import Subscription from './pages/Subscription';
 import AppLayout from './components/layout/AppLayout';
 import Login from './pages/Login';
@@ -97,13 +96,13 @@ const AuthenticatedApp = () => {
         <Route path="/Admin" element={<AdminDashboard />} />
         <Route path="/AdminSeries" element={<AdminSeries />} />
         <Route path="/AdminEpisodes" element={<AdminEpisodes />} />
-        <Route path="/AdminUsers" element={isFirestoreCatalog ? <AdminFirebaseNotice /> : <AdminUsers />} />
-        <Route path="/AdminCodes" element={isFirestoreCatalog ? <AdminFirebaseNotice /> : <AdminCodes />} />
-        <Route path="/AdminProposals" element={isFirestoreCatalog ? <AdminFirebaseNotice /> : <AdminProposals />} />
-        <Route path="/AdminAvatars" element={isFirestoreCatalog ? <AdminFirebaseNotice /> : <AdminAvatars />} />
+        <Route path="/AdminUsers" element={isFirestoreCatalog ? <Navigate to="/Admin" replace /> : <AdminUsers />} />
+        <Route path="/AdminCodes" element={isFirestoreCatalog ? <Navigate to="/Admin" replace /> : <AdminCodes />} />
+        <Route path="/AdminProposals" element={isFirestoreCatalog ? <Navigate to="/Admin" replace /> : <AdminProposals />} />
+        <Route path="/AdminAvatars" element={isFirestoreCatalog ? <Navigate to="/Admin" replace /> : <AdminAvatars />} />
         <Route path="/AdminEpisodeCreator" element={<AdminEpisodeCreator />} />
         <Route path="/AdminSubscriptions" element={<AdminSubscriptions />} />
-        <Route path="/AdminMetrics" element={isFirestoreCatalog ? <AdminFirebaseNotice /> : <AdminMetrics />} />
+        <Route path="/AdminMetrics" element={isFirestoreCatalog ? <Navigate to="/Admin" replace /> : <AdminMetrics />} />
         <Route path="/AdminBanner" element={<AdminBanner />} />
       </Route>
       
