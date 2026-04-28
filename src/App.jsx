@@ -77,6 +77,8 @@ const AuthenticatedApp = () => {
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/ProfileSelect" replace />} />
+      <Route path="/login" element={<Navigate to="/ProfileSelect" replace />} />
+      <Route path="/Login" element={<Navigate to="/ProfileSelect" replace />} />
       <Route path="/ProfileSelect" element={<ProfileSelect />} />
       <Route path="/ActivateCode" element={<ActivateCode />} />
       <Route path="/Player" element={<Player />} />
