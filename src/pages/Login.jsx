@@ -62,8 +62,8 @@ export default function Login() {
 			<div className="w-full max-w-md">
 				<div className="text-center mb-8">
 					<h1 className="text-3xl font-black mb-2">
-						<span className="text-[#E50914]">Cristo</span>
-						<span className="text-[#FFC107]">Fy</span>
+						<span className="text-[#0057FF]">Cristo</span>
+						<span className="text-white">Fy</span>
 					</h1>
 					<p className="text-gray-400">
 						{mode === 'login' ? 'Entre com sua conta' : 'Crie sua conta'}

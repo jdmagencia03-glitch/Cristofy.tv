@@ -52,8 +52,8 @@ const AuthenticatedApp = () => {
       <div className="fixed inset-0 flex items-center justify-center bg-[#0F0F0F]">
         <div className="text-center">
           <h1 className="text-3xl font-black mb-4">
-            <span className="text-[#E50914]">Cristo</span>
-            <span className="text-[#FFC107]">Fy</span>
+            <span className="text-[#0057FF]">Cristo</span>
+            <span className="text-white">Fy</span>
           </h1>
           <div className="w-8 h-8 border-2 border-[#E50914] border-t-transparent rounded-full animate-spin mx-auto"></div>
         </div>

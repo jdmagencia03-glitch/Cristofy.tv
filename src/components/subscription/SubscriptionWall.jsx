@@ -10,8 +10,8 @@ export default function SubscriptionWall({ isTrial = false, daysLeft = 0 }) {
       <div className="max-w-md w-full text-center">
         {/* Logo */}
         <h1 className="text-3xl font-black mb-8">
-          <span className="text-[#E50914]">Cristo</span>
-          <span className="text-[#FFC107]">Fy</span>
+          <span className="text-[#0057FF]">Cristo</span>
+          <span className="text-white">Fy</span>
         </h1>
 
         <div className="bg-[#1A1A1A] border border-white/10 rounded-2xl p-8 shadow-2xl">
