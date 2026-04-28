@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
-import { useNavigate } from 'react-router-dom';
+import { getFirebaseApp } from '@/lib/firebase';
+import { useAuth } from '@/lib/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -8,17 +9,17 @@ import { Send, CheckCircle, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export default function Propose() {
-  const [user, setUser] = useState(null);
+  const { user } = useAuth();
+  const firebaseConfigured = !!getFirebaseApp();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    base44.auth.me().then(setUser);
-  }, []);
-
   const handleSubmit = async () => {
+    if (firebaseConfigured) {
+      return;
+    }
     if (!title.trim()) return;
     setLoading(true);
     await base44.entities.ContentProposal.create({
@@ -40,6 +41,12 @@ export default function Propose() {
 
         <h1 className="text-2xl font-bold mb-2">Sugerir Desenho</h1>
         <p className="text-gray-400 text-sm mb-6">Sugira um desenho que você gostaria de ver na plataforma!</p>
+
+        {firebaseConfigured && (
+          <p className="text-sm text-yellow-100 bg-yellow-500/10 border border-yellow-500/30 rounded-lg px-4 py-3 mb-6">
+            Sugestões por formulário voltam assim que os dados estiverem no Firestore (migração em andamento).
+          </p>
+        )}
 
         {sent ? (
           <div className="text-center py-12 bg-[#1A1A1A] rounded-xl">
@@ -63,7 +70,7 @@ export default function Propose() {
             />
             <Button
               onClick={handleSubmit}
-              disabled={loading || !title.trim()}
+              disabled={loading || !title.trim() || firebaseConfigured}
               className="w-full bg-[#E50914] hover:bg-[#FF3D3D]"
             >
               <Send className="w-4 h-4 mr-2" /> Enviar Sugestão

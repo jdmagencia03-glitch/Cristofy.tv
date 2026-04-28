@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { deleteUser } from 'firebase/auth';
 import { base44 } from '@/api/base44Client';
+import { getFirebaseAuth, getFirebaseApp } from '@/lib/firebase';
+import { useAuth } from '@/lib/AuthContext';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Pencil, Trash2, LogOut, Check, Baby, UserX } from 'lucide-react';
@@ -14,6 +17,24 @@ const LOCAL_PREVIEW_EMAIL = 'preview-local@localhost';
 const LOCAL_PROFILES_KEY = 'desenhos_local_preview_profiles';
 
 const hasValidBase44AppId = (appId) => Boolean(appId && appId !== 'null' && appId !== 'undefined');
+
+const firebaseConfigured = !!getFirebaseApp();
+
+function firebaseProfilesKey(uid) {
+	return `desenhos_firebase_profiles_${uid}`;
+}
+
+function readFirebaseProfiles(uid) {
+	try {
+		return JSON.parse(localStorage.getItem(firebaseProfilesKey(uid)) || '[]');
+	} catch {
+		return [];
+	}
+}
+
+function writeFirebaseProfiles(uid, profiles) {
+	localStorage.setItem(firebaseProfilesKey(uid), JSON.stringify(profiles));
+}
 
 const readLocalProfiles = () => {
   try {
@@ -30,7 +51,8 @@ const writeLocalProfiles = (profiles) => {
 export default function ProfileSelect() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const isLocalPreview = !hasValidBase44AppId(appParams.appId);
+  const { user: authSessionUser, logout } = useAuth();
+  const isLocalPreview = !firebaseConfigured && !hasValidBase44AppId(appParams.appId);
   const [user, setUser] = useState(null);
   const [mode, setMode] = useState('select'); // 'select' | 'manage' | 'create' | 'edit'
   const isAdmin = user?.role === 'admin';
@@ -49,6 +71,15 @@ export default function ProfileSelect() {
 
     if (isLocalPreview) {
       setUser({ email: LOCAL_PREVIEW_EMAIL, role: 'user' });
+      setUserLoadError(null);
+      setIsLoadingUser(false);
+      return () => {
+        isMounted = false;
+      };
+    }
+
+    if (firebaseConfigured) {
+      setUser(authSessionUser);
       setUserLoadError(null);
       setIsLoadingUser(false);
       return () => {
@@ -79,18 +110,25 @@ export default function ProfileSelect() {
     return () => {
       isMounted = false;
     };
-  }, [isLocalPreview]);
+  }, [isLocalPreview, firebaseConfigured, authSessionUser]);
 
   const { data: remoteProfiles = [] } = useQuery({
-    queryKey: ['profiles', user?.email],
-    queryFn: () => base44.entities.Profile.filter({ user_email: user.email }),
-    enabled: !isLocalPreview && !!user?.email,
+    queryKey: ['profiles', firebaseConfigured ? 'firebase' : 'base44', firebaseConfigured ? authSessionUser?.uid : user?.email],
+    queryFn: () => {
+      if (firebaseConfigured && authSessionUser?.uid) {
+        return Promise.resolve(readFirebaseProfiles(authSessionUser.uid));
+      }
+      return base44.entities.Profile.filter({ user_email: user.email });
+    },
+    enabled:
+      !isLocalPreview &&
+      (firebaseConfigured ? !!authSessionUser?.uid && !!authSessionUser?.email : !!user?.email),
   });
 
   const { data: remoteAvatars = [] } = useQuery({
     queryKey: ['avatars'],
     queryFn: () => base44.entities.Avatar.list(),
-    enabled: !isLocalPreview,
+    enabled: !isLocalPreview && !firebaseConfigured,
   });
 
   const defaultAvatars = [
@@ -104,7 +142,19 @@ export default function ProfileSelect() {
   const allAvatars = avatars.length > 0 ? avatars : defaultAvatars;
 
   const createMut = useMutation({
-    mutationFn: (data) => base44.entities.Profile.create(data),
+    mutationFn: async (data) => {
+      if (firebaseConfigured && authSessionUser?.uid) {
+        const list = readFirebaseProfiles(authSessionUser.uid);
+        const created = {
+          id: crypto.randomUUID?.() || `fb-${Date.now()}`,
+          ...data,
+          user_email: authSessionUser.email,
+        };
+        writeFirebaseProfiles(authSessionUser.uid, [...list, created]);
+        return created;
+      }
+      return base44.entities.Profile.create(data);
+    },
     onSuccess: (createdProfile) => {
       queryClient.invalidateQueries({ queryKey: ['profiles'] });
       resetForm();
@@ -125,7 +175,15 @@ export default function ProfileSelect() {
   });
 
   const updateMut = useMutation({
-    mutationFn: ({ id, data }) => base44.entities.Profile.update(id, data),
+    mutationFn: async ({ id, data }) => {
+      if (firebaseConfigured && authSessionUser?.uid) {
+        const list = readFirebaseProfiles(authSessionUser.uid);
+        const next = list.map((p) => (p.id === id ? { ...p, ...data } : p));
+        writeFirebaseProfiles(authSessionUser.uid, next);
+        return next.find((p) => p.id === id);
+      }
+      return base44.entities.Profile.update(id, data);
+    },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['profiles'] }); setMode('manage'); setEditingProfile(null); resetForm(); },
     onError: (error) => {
       toast({
@@ -137,7 +195,17 @@ export default function ProfileSelect() {
   });
 
   const deleteMut = useMutation({
-    mutationFn: (id) => base44.entities.Profile.delete(id),
+    mutationFn: async (id) => {
+      if (firebaseConfigured && authSessionUser?.uid) {
+        const list = readFirebaseProfiles(authSessionUser.uid);
+        writeFirebaseProfiles(
+          authSessionUser.uid,
+          list.filter((p) => p.id !== id)
+        );
+        return;
+      }
+      return base44.entities.Profile.delete(id);
+    },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['profiles'] }); setDeleteConfirm(null); },
   });
 
@@ -145,7 +213,9 @@ export default function ProfileSelect() {
 
   const profileSaveInfoMessage = isLocalPreview
     ? 'Preview local: este perfil será salvo apenas neste navegador.'
-    : null;
+    : firebaseConfigured
+      ? 'Perfis ficam salvos neste navegador até migrarmos para o Firestore.'
+      : null;
 
   const profileSaveBlockedMessage = userLoadError || (!isLoadingUser && !user?.email)
       ? 'Não foi possível carregar sua sessão. Entre novamente para salvar perfis.'
@@ -453,7 +523,8 @@ export default function ProfileSelect() {
           Gerenciar perfis
         </button>
         <button
-          onClick={() => base44.auth.logout()}
+          type="button"
+          onClick={() => logout(true)}
           className="flex items-center gap-2 text-sm text-[#808080] hover:text-white transition-colors"
         >
           <LogOut className="w-4 h-4" /> Sair
@@ -483,9 +554,34 @@ export default function ProfileSelect() {
                 <Button
                   onClick={async () => {
                     setDeletingAccount(true);
-                    await base44.functions.invoke('deleteMyAccount', {});
-                    localStorage.removeItem('desenhos_active_profile');
-                    base44.auth.logout();
+                    try {
+                      if (firebaseConfigured) {
+                        const auth = getFirebaseAuth();
+                        if (auth?.currentUser) {
+                          await deleteUser(auth.currentUser);
+                        }
+                        localStorage.removeItem('desenhos_active_profile');
+                        if (authSessionUser?.uid) {
+                          localStorage.removeItem(firebaseProfilesKey(authSessionUser.uid));
+                        }
+                      } else {
+                        await base44.functions.invoke('deleteMyAccount', {});
+                        localStorage.removeItem('desenhos_active_profile');
+                        base44.auth.logout();
+                      }
+                    } catch (err) {
+                      toast({
+                        title: 'Não foi possível excluir a conta',
+                        description:
+                          err?.code === 'auth/requires-recent-login'
+                            ? 'Por segurança, saia e entre novamente antes de excluir.'
+                            : err?.message || 'Tente novamente.',
+                        variant: 'destructive',
+                      });
+                    } finally {
+                      setDeletingAccount(false);
+                      setDeleteAccountConfirm(false);
+                    }
                   }}
                   disabled={deletingAccount}
                   className="bg-red-600 hover:bg-red-700 flex-1"

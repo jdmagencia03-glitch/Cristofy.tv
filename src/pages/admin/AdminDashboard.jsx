@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
+import { useAuth } from '@/lib/AuthContext';
 import { useQuery } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
 import { Film, Tv, Users, Key, Lightbulb, Smile, BarChart3, CreditCard, LayoutDashboard } from 'lucide-react';
@@ -12,15 +13,12 @@ const TABS = [
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('overview');
 
   useEffect(() => {
-    base44.auth.me().then(u => {
-      if (u.role !== 'admin') navigate('/Home');
-      setUser(u);
-    });
-  }, []);
+    if (user && user.role !== 'admin') navigate('/Home');
+  }, [user, navigate]);
 
   const { data: series = [] } = useQuery({ queryKey: ['adminSeries'], queryFn: () => base44.entities.Series.list() });
   const { data: episodes = [] } = useQuery({ queryKey: ['adminEpisodes'], queryFn: () => base44.entities.Episode.list() });

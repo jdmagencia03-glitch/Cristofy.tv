@@ -1,29 +1,33 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
+import { getFirebaseApp } from '@/lib/firebase';
+import { useAuth } from '@/lib/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Key, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
+import { appParams } from '@/lib/app-params';
+
+const hasValidBase44AppId = (appId) => Boolean(appId && appId !== 'null' && appId !== 'undefined');
 
 export default function ActivateCode() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const firebaseOnly = !!getFirebaseApp() && !hasValidBase44AppId(appParams.appId);
+
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    base44.auth.me().then(setUser);
-  }, []);
 
   const handleActivate = async () => {
+    if (firebaseOnly) return;
     if (!code.trim()) return;
     setLoading(true);
     setError('');
 
     const codes = await base44.entities.AccessCode.filter({ code: code.trim().toUpperCase() });
-    
+
     if (codes.length === 0) {
       setError('Código inválido. Verifique e tente novamente.');
       setLoading(false);
@@ -53,6 +57,23 @@ export default function ActivateCode() {
     setLoading(false);
     setTimeout(() => navigate('/ProfileSelect'), 2000);
   };
+
+  if (firebaseOnly) {
+    return (
+      <div className="min-h-screen bg-[#0F0F0F] flex items-center justify-center p-4">
+        <div className="w-full max-w-md text-center">
+          <h1 className="text-2xl font-bold text-white mb-3">Ativação por código</h1>
+          <p className="text-gray-400 text-sm mb-6">
+            O acesso passou a ser pelo <strong className="text-white">Firebase Authentication</strong>.
+            Ativação por código do Base44 será recriada no Firestore quando os dados forem migrados.
+          </p>
+          <Button onClick={() => navigate('/ProfileSelect')} className="bg-[#E50914] hover:bg-[#FF3D3D]">
+            Ir para perfis
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#0F0F0F] flex items-center justify-center p-4">
@@ -105,6 +126,7 @@ export default function ActivateCode() {
               </Button>
 
               <button
+                type="button"
                 onClick={() => navigate('/Home')}
                 className="w-full mt-3 text-sm text-gray-500 hover:text-gray-300 transition-colors py-2"
               >

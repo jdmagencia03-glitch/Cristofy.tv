@@ -28,9 +28,24 @@ import AdminMetrics from './pages/admin/AdminMetrics';
 import AdminBanner from './pages/admin/AdminBanner';
 import Subscription from './pages/Subscription';
 import AppLayout from './components/layout/AppLayout';
+import Login from './pages/Login';
 
 const AuthenticatedApp = () => {
-  const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
+  const { isLoadingAuth, isLoadingPublicSettings, authError, isAuthenticated } = useAuth();
+
+  if (authError?.type === 'firebase_not_configured') {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-[#0F0F0F] p-6">
+        <div className="max-w-md text-center text-gray-300">
+          <p className="text-lg font-semibold text-white mb-2">Firebase não configurado</p>
+          <p className="text-sm">
+            Defina as variáveis <code className="text-[#FFC107]">VITE_FIREBASE_*</code> no arquivo{' '}
+            <code className="text-[#FFC107]">.env.local</code> ou nas Environment Variables da Vercel.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
@@ -46,13 +61,17 @@ const AuthenticatedApp = () => {
     );
   }
 
-  if (authError) {
-    if (authError.type === 'user_not_registered') {
-      return <UserNotRegisteredError />;
-    } else if (authError.type === 'auth_required') {
-      navigateToLogin();
-      return null;
-    }
+  if (authError?.type === 'user_not_registered') {
+    return <UserNotRegisteredError />;
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
+    );
   }
 
   return (

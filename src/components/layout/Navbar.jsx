@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Search, ChevronDown, ArrowLeft, LogOut, Users } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
 import { appParams } from '@/lib/app-params';
+import { useAuth } from '@/lib/AuthContext';
 import NotificationCenter from '@/components/admin/NotificationCenter';
 
 const hasValidBase44AppId = (appId) => Boolean(appId && appId !== 'null' && appId !== 'undefined');
 
 export default function Navbar({ isStackRoute = false }) {
   const [scrolled, setScrolled] = useState(false);
-  const [user, setUser] = useState(null);
+  const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const isLocalPreview = !hasValidBase44AppId(appParams.appId);
@@ -19,10 +19,6 @@ export default function Navbar({ isStackRoute = false }) {
     const onScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', onScroll);
     return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
-  useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => {});
   }, []);
 
   const links = [
@@ -139,7 +135,7 @@ export default function Navbar({ isStackRoute = false }) {
                   </button>
                   <button
                     type="button"
-                    onClick={() => base44.auth.logout()}
+                    onClick={() => logout(true)}
                     className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-red-300 hover:bg-red-500/10"
                   >
                     <LogOut className="w-4 h-4" />
