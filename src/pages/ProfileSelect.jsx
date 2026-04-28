@@ -467,11 +467,10 @@ export default function ProfileSelect() {
   return (
     <div className="min-h-screen bg-[#141414] flex flex-col items-center justify-center p-4">
       <div className="mb-12 text-center">
-        <img
-          src="/cristofy-logo.png"
-          alt="CristoFy"
-          className="h-auto w-[260px] md:w-[360px] mx-auto mb-8 object-contain"
-        />
+        <div className="mb-8 text-4xl md:text-5xl font-black tracking-tight">
+          <span className="text-[#0099FF]">Cristo</span>
+          <span className="text-white">Fy</span>
+        </div>
         <h1 className="text-3xl md:text-4xl font-semibold text-white">Quem está assistindo?</h1>
       </div>
 
