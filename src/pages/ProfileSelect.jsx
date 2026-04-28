@@ -151,10 +151,11 @@ export default function ProfileSelect() {
   });
 
   const defaultAvatars = [
-    { id: 'default-1', name: 'Goku', image_url: 'https://i.imgur.com/3TqSCGl.png' },
-    { id: 'default-2', name: 'Mickey', image_url: 'https://i.imgur.com/bpnGfXe.png' },
-    { id: 'default-3', name: 'Tom', image_url: 'https://i.imgur.com/vL5LXJM.png' },
-    { id: 'default-4', name: 'Scooby', image_url: 'https://i.imgur.com/k1WT2VH.png' },
+    { id: 'default-1', name: 'Pomba', image_url: '/cristofy-avatar-dove.png' },
+    { id: 'default-2', name: 'Cruz', image_url: '/cristofy-avatar-cross.png' },
+    { id: 'default-3', name: 'Leao', image_url: '/cristofy-avatar-lion.png' },
+    { id: 'default-4', name: 'Jesus', image_url: '/cristofy-avatar-jesus.png' },
+    { id: 'default-5', name: 'Ceia', image_url: '/cristofy-avatar-communion.png' },
   ];
   const profiles = isLocalPreview ? localProfiles : remoteProfiles;
   const avatars = isLocalPreview ? [] : remoteAvatars;
