@@ -10,6 +10,9 @@ function looksLikeUrl(str) {
 	return /^https?:\/\//i.test(t);
 }
 
+// Mantemos o código de upload pronto, mas oculto para evitar depender do Firebase Storage/upgrade.
+const SHOW_FILE_UPLOAD = false;
+
 /**
  * Upload de arquivo → Firebase Storage (URL fixa no projeto) ou URL colada.
  * Requer login Firebase para upload; regras Storage em `storage.rules`.
@@ -50,40 +53,42 @@ export default function ImageUpload({
 
 	return (
 		<div className="space-y-3">
-			<div>
-				<p className="text-xs text-gray-400 mb-1">Enviar do computador</p>
-				<div
-					onClick={() => !uploading && inputRef.current?.click()}
-					className="relative w-full h-28 rounded-lg overflow-hidden bg-[#2A2A2A] border-2 border-dashed border-white/15 hover:border-[#E50914]/50 cursor-pointer flex items-center justify-center transition-colors"
-				>
-					{uploading ? (
-						<Loader2 className="w-8 h-8 animate-spin text-[#E50914]" />
-					) : (
-						<div className="flex flex-col items-center gap-1 text-gray-400 px-2 text-center">
-							<Upload className="w-7 h-7" />
-							<span className="text-[11px] leading-tight">
-								Clique para escolher imagem — gera um link permanente (Firebase Storage)
-							</span>
-						</div>
-					)}
+			{SHOW_FILE_UPLOAD && (
+				<div>
+					<p className="text-xs text-gray-400 mb-1">Enviar do computador</p>
+					<div
+						onClick={() => !uploading && inputRef.current?.click()}
+						className="relative w-full h-28 rounded-lg overflow-hidden bg-[#2A2A2A] border-2 border-dashed border-white/15 hover:border-[#E50914]/50 cursor-pointer flex items-center justify-center transition-colors"
+					>
+						{uploading ? (
+							<Loader2 className="w-8 h-8 animate-spin text-[#E50914]" />
+						) : (
+							<div className="flex flex-col items-center gap-1 text-gray-400 px-2 text-center">
+								<Upload className="w-7 h-7" />
+								<span className="text-[11px] leading-tight">
+									Clique para escolher imagem — gera um link permanente (Firebase Storage)
+								</span>
+							</div>
+						)}
+					</div>
+					<p className="text-[10px] text-gray-500 mt-1 leading-snug">
+						Você precisa estar <strong className="text-gray-400">logado</strong>. No plano gratuito há cota de armazenamento;
+						o arquivo vira uma URL HTTPS salva no catálogo (capa/banner não somem).
+					</p>
+					<input
+						ref={inputRef}
+						type="file"
+						accept="image/*"
+						className="hidden"
+						onChange={handleFileChange}
+					/>
 				</div>
-				<p className="text-[10px] text-gray-500 mt-1 leading-snug">
-					Você precisa estar <strong className="text-gray-400">logado</strong>. No plano gratuito há cota de armazenamento;
-					o arquivo vira uma URL HTTPS salva no catálogo (capa/banner não somem).
-				</p>
-				<input
-					ref={inputRef}
-					type="file"
-					accept="image/*"
-					className="hidden"
-					onChange={handleFileChange}
-				/>
-			</div>
+			)}
 
 			<div className="flex items-start gap-2 rounded-lg border border-white/10 bg-[#222]/80 p-2">
 				<Link2 className="w-4 h-4 text-[#FFC107] shrink-0 mt-2.5" />
 				<div className="flex-1 min-w-0 space-y-1">
-					<p className="text-xs text-gray-400">Ou cole uma URL de imagem</p>
+					<p className="text-xs text-gray-400">Cole uma URL de imagem</p>
 					<Input
 						type="url"
 						inputMode="url"
@@ -94,7 +99,7 @@ export default function ImageUpload({
 						className="bg-[#2A2A2A] border-white/10 text-white text-sm"
 					/>
 					<p className="text-[10px] text-gray-500 leading-snug">
-						Alternativa sem upload: Imgur, ImgBB, Bunny, link direto, etc.
+						Use Imgur, ImgBB, Bunny, link direto, GitHub raw ou outro host de imagem.
 					</p>
 				</div>
 			</div>
@@ -123,7 +128,7 @@ export default function ImageUpload({
 						</div>
 					</>
 				) : (
-					<p className="text-xs text-gray-600 px-4 text-center">Prévia aparece com URL válida ou após o upload</p>
+					<p className="text-xs text-gray-600 px-4 text-center">Prévia aparece quando a URL for válida</p>
 				)}
 			</div>
 
