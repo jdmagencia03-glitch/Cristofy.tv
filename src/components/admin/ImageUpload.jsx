@@ -10,8 +10,8 @@ function looksLikeUrl(str) {
 	return /^https?:\/\//i.test(t);
 }
 
-// Mantemos o código de upload pronto, mas oculto para evitar depender do Firebase Storage/upgrade.
-const SHOW_FILE_UPLOAD = false;
+// Firebase Storage está ativo: permite enviar capas, banners e thumbnails pelo admin.
+const SHOW_FILE_UPLOAD = true;
 
 /**
  * Upload de arquivo → Firebase Storage (URL fixa no projeto) ou URL colada.
@@ -99,7 +99,7 @@ export default function ImageUpload({
 						className="bg-[#2A2A2A] border-white/10 text-white text-sm"
 					/>
 					<p className="text-[10px] text-gray-500 leading-snug">
-						Use Imgur, ImgBB, Bunny, link direto, GitHub raw ou outro host de imagem.
+						Se preferir, cole uma URL externa. Para arquivo do computador, use o envio acima via Firebase Storage.
 					</p>
 				</div>
 			</div>

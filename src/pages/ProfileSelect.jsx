@@ -39,6 +39,25 @@ function readFirebaseProfiles(uid) {
 	}
 }
 
+function writeFirebaseProfiles(uid, profiles) {
+	localStorage.setItem(firebaseProfilesKey(uid), JSON.stringify(profiles));
+}
+
+function withTimeout(promise, message) {
+	return Promise.race([
+		promise,
+		new Promise((_, reject) => {
+			setTimeout(() => reject(new Error(message)), 10000);
+		}),
+	]);
+}
+
+function newLocalId() {
+	return typeof crypto !== 'undefined' && crypto.randomUUID
+		? crypto.randomUUID()
+		: `local-${Date.now()}`;
+}
+
 const readLocalProfiles = () => {
   try {
     return JSON.parse(localStorage.getItem(LOCAL_PROFILES_KEY) || '[]');
@@ -119,21 +138,38 @@ export default function ProfileSelect() {
     queryKey: ['profiles', firebaseConfigured ? 'firebase' : 'base44', firebaseConfigured ? authSessionUser?.uid : user?.email],
     queryFn: async () => {
       if (firebaseConfigured && authSessionUser?.uid) {
-        let list = await listProfiles(authSessionUser.uid);
+        let list;
+        try {
+          list = await withTimeout(
+            listProfiles(authSessionUser.uid),
+            'O Firestore demorou para responder. Usando perfis salvos neste navegador.'
+          );
+        } catch (error) {
+          console.warn('Failed to load Firestore profiles, using local backup:', error);
+          return readFirebaseProfiles(authSessionUser.uid);
+        }
         const legacyProfiles = readFirebaseProfiles(authSessionUser.uid);
         if (list.length === 0 && legacyProfiles.length > 0) {
-          await Promise.all(
-            legacyProfiles.map((profile) =>
-              createProfile(authSessionUser.uid, {
-                name: profile.name,
-                is_kid: !!profile.is_kid,
-                avatar_url: profile.avatar_url || '',
-                user_email: authSessionUser.email,
-              })
-            )
-          );
-          localStorage.removeItem(firebaseProfilesKey(authSessionUser.uid));
-          list = await listProfiles(authSessionUser.uid);
+          try {
+            await withTimeout(
+              Promise.all(
+                legacyProfiles.map((profile) =>
+                  createProfile(authSessionUser.uid, {
+                    name: profile.name,
+                    is_kid: !!profile.is_kid,
+                    avatar_url: profile.avatar_url || '',
+                    user_email: authSessionUser.email,
+                  })
+                )
+              ),
+              'O Firestore demorou para migrar os perfis.'
+            );
+            localStorage.removeItem(firebaseProfilesKey(authSessionUser.uid));
+            list = await withTimeout(listProfiles(authSessionUser.uid), 'O Firestore demorou para responder.');
+          } catch (error) {
+            console.warn('Failed to migrate local profiles to Firestore:', error);
+            return legacyProfiles;
+          }
         }
         return list;
       }
@@ -144,12 +180,6 @@ export default function ProfileSelect() {
       (firebaseConfigured ? !!authSessionUser?.uid && !!authSessionUser?.email : !!user?.email),
   });
 
-  const { data: remoteAvatars = [] } = useQuery({
-    queryKey: ['avatars'],
-    queryFn: () => base44.entities.Avatar.list(),
-    enabled: !isLocalPreview && !firebaseConfigured,
-  });
-
   const defaultAvatars = [
     { id: 'default-1', name: 'Pomba', image_url: '/cristofy-avatar-dove.png' },
     { id: 'default-2', name: 'Cruz', image_url: '/cristofy-avatar-cross.png' },
@@ -158,21 +188,42 @@ export default function ProfileSelect() {
     { id: 'default-5', name: 'Ceia', image_url: '/cristofy-avatar-communion.png' },
   ];
   const profiles = isLocalPreview ? localProfiles : remoteProfiles;
-  const avatars = isLocalPreview ? [] : remoteAvatars;
-  const allAvatars = avatars.length > 0 ? avatars : defaultAvatars;
+  const allAvatars = defaultAvatars;
 
   const createMut = useMutation({
     mutationFn: async (data) => {
       if (firebaseConfigured && authSessionUser?.uid) {
-        return createProfile(authSessionUser.uid, {
-          ...data,
-          user_email: authSessionUser.email,
-        });
+        try {
+          return await withTimeout(
+            createProfile(authSessionUser.uid, {
+              ...data,
+              user_email: authSessionUser.email,
+            }),
+            'O Firestore demorou para salvar. O perfil foi salvo neste navegador.'
+          );
+        } catch (error) {
+          console.warn('Failed to save profile in Firestore, using local backup:', error);
+          const createdProfile = {
+            id: newLocalId(),
+            ...data,
+            user_email: authSessionUser.email,
+            user_uid: authSessionUser.uid,
+            saved_locally: true,
+          };
+          writeFirebaseProfiles(authSessionUser.uid, [...readFirebaseProfiles(authSessionUser.uid), createdProfile]);
+          return createdProfile;
+        }
       }
       return base44.entities.Profile.create(data);
     },
     onSuccess: (createdProfile) => {
       queryClient.invalidateQueries({ queryKey: ['profiles'] });
+      if (createdProfile?.saved_locally) {
+        toast({
+          title: 'Perfil salvo',
+          description: 'O Firebase não respondeu agora, então salvamos este perfil neste navegador.',
+        });
+      }
       resetForm();
       // Se é o primeiro perfil, seleciona automaticamente e vai para Home
       if (profiles.length === 0) {
@@ -193,10 +244,22 @@ export default function ProfileSelect() {
   const updateMut = useMutation({
     mutationFn: async ({ id, data }) => {
       if (firebaseConfigured && authSessionUser?.uid) {
-        return updateProfile(authSessionUser.uid, id, {
-          ...data,
-          user_email: authSessionUser.email,
-        });
+        try {
+          return await withTimeout(
+            updateProfile(authSessionUser.uid, id, {
+              ...data,
+              user_email: authSessionUser.email,
+            }),
+            'O Firestore demorou para atualizar. O perfil foi salvo neste navegador.'
+          );
+        } catch (error) {
+          console.warn('Failed to update profile in Firestore, using local backup:', error);
+          const nextProfiles = readFirebaseProfiles(authSessionUser.uid).map((profile) =>
+            profile.id === id ? { ...profile, ...data, saved_locally: true } : profile
+          );
+          writeFirebaseProfiles(authSessionUser.uid, nextProfiles);
+          return { id, ...data, saved_locally: true };
+        }
       }
       return base44.entities.Profile.update(id, data);
     },
