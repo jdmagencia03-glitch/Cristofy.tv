@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useAuth } from '@/lib/AuthContext';
+import { catalogUsesFirestore, listAllSeriesAdmin, listEpisodesForHome } from '@/api/catalog';
 import { useQuery } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
 import { Film, Tv, Users, Key, Lightbulb, Smile, BarChart3, CreditCard, LayoutDashboard } from 'lucide-react';
@@ -15,16 +16,35 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('overview');
+  const fsCatalog = catalogUsesFirestore();
 
   useEffect(() => {
     if (user && user.role !== 'admin') navigate('/Home');
   }, [user, navigate]);
 
-  const { data: series = [] } = useQuery({ queryKey: ['adminSeries'], queryFn: () => base44.entities.Series.list() });
-  const { data: episodes = [] } = useQuery({ queryKey: ['adminEpisodes'], queryFn: () => base44.entities.Episode.list() });
-  const { data: users = [] } = useQuery({ queryKey: ['adminUsers'], queryFn: () => base44.entities.User.list() });
-  const { data: codes = [] } = useQuery({ queryKey: ['adminCodes'], queryFn: () => base44.entities.AccessCode.list() });
-  const { data: proposals = [] } = useQuery({ queryKey: ['adminProposals'], queryFn: () => base44.entities.ContentProposal.filter({ status: 'pendente' }) });
+  const { data: series = [] } = useQuery({
+    queryKey: ['adminSeries'],
+    queryFn: () => listAllSeriesAdmin(),
+  });
+  const { data: episodes = [] } = useQuery({
+    queryKey: ['adminEpisodes'],
+    queryFn: () => listEpisodesForHome(5000),
+  });
+  const { data: users = [] } = useQuery({
+    queryKey: ['adminUsers'],
+    queryFn: () => base44.entities.User.list(),
+    enabled: !fsCatalog,
+  });
+  const { data: codes = [] } = useQuery({
+    queryKey: ['adminCodes'],
+    queryFn: () => base44.entities.AccessCode.list(),
+    enabled: !fsCatalog,
+  });
+  const { data: proposals = [] } = useQuery({
+    queryKey: ['adminProposals'],
+    queryFn: () => base44.entities.ContentProposal.filter({ status: 'pendente' }),
+    enabled: !fsCatalog,
+  });
 
   const usedCodes = codes.filter(c => c.used_by);
 
