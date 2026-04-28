@@ -5,7 +5,7 @@ import { getFirebaseAuth } from '@/lib/firebase';
 const AuthContext = createContext();
 
 function parseAdminEmails() {
-	const raw = import.meta.env.VITE_ADMIN_EMAILS || '';
+	const raw = import.meta.env.VITE_ADMIN_EMAILS || 'contatomkmnz@gmail.com';
 	return raw.split(',').map((s) => s.trim().toLowerCase()).filter(Boolean);
 }
 
