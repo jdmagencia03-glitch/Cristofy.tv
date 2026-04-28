@@ -44,7 +44,7 @@ export default function Navbar({ isStackRoute = false }) {
           {/* Desktop: mantém logo e links */}
           <Link to="/Home" className="hidden md:flex items-center ml-4">
             <img
-              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69b61a29474f4e54b5af9b86/acb41898f_desenhosflix.png"
+              src="/cristofy-logo.png"
               alt="CristoFy"
               className="h-10 w-auto object-contain"
             />
@@ -67,7 +67,7 @@ export default function Navbar({ isStackRoute = false }) {
           <div className="flex items-center gap-8">
             <Link to="/Home" className="flex items-center shrink-0">
               <img
-                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69b61a29474f4e54b5af9b86/acb41898f_desenhosflix.png"
+                src="/cristofy-logo.png"
                 alt="CristoFy"
                 className="h-10 md:h-12 w-auto object-contain"
               />

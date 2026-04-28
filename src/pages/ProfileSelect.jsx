@@ -468,7 +468,7 @@ export default function ProfileSelect() {
     <div className="min-h-screen bg-[#141414] flex flex-col items-center justify-center p-4">
       <div className="mb-12 text-center">
         <img
-          src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69b61a29474f4e54b5af9b86/acb41898f_desenhosflix.png"
+          src="/cristofy-logo.png"
           alt="CristoFy"
           className="h-12 w-auto mx-auto mb-8 object-contain"
         />
