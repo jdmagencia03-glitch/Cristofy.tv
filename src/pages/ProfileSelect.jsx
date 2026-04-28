@@ -2,6 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { deleteUser } from 'firebase/auth';
 import { base44 } from '@/api/base44Client';
 import { getFirebaseAuth, getFirebaseApp } from '@/lib/firebase';
+import {
+  createProfile,
+  deleteAllProfiles,
+  deleteProfile,
+  listProfiles,
+  updateProfile,
+} from '@/api/profilesFirestore';
 import { useAuth } from '@/lib/AuthContext';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
@@ -30,10 +37,6 @@ function readFirebaseProfiles(uid) {
 	} catch {
 		return [];
 	}
-}
-
-function writeFirebaseProfiles(uid, profiles) {
-	localStorage.setItem(firebaseProfilesKey(uid), JSON.stringify(profiles));
 }
 
 const readLocalProfiles = () => {
@@ -114,9 +117,25 @@ export default function ProfileSelect() {
 
   const { data: remoteProfiles = [] } = useQuery({
     queryKey: ['profiles', firebaseConfigured ? 'firebase' : 'base44', firebaseConfigured ? authSessionUser?.uid : user?.email],
-    queryFn: () => {
+    queryFn: async () => {
       if (firebaseConfigured && authSessionUser?.uid) {
-        return Promise.resolve(readFirebaseProfiles(authSessionUser.uid));
+        let list = await listProfiles(authSessionUser.uid);
+        const legacyProfiles = readFirebaseProfiles(authSessionUser.uid);
+        if (list.length === 0 && legacyProfiles.length > 0) {
+          await Promise.all(
+            legacyProfiles.map((profile) =>
+              createProfile(authSessionUser.uid, {
+                name: profile.name,
+                is_kid: !!profile.is_kid,
+                avatar_url: profile.avatar_url || '',
+                user_email: authSessionUser.email,
+              })
+            )
+          );
+          localStorage.removeItem(firebaseProfilesKey(authSessionUser.uid));
+          list = await listProfiles(authSessionUser.uid);
+        }
+        return list;
       }
       return base44.entities.Profile.filter({ user_email: user.email });
     },
@@ -144,14 +163,10 @@ export default function ProfileSelect() {
   const createMut = useMutation({
     mutationFn: async (data) => {
       if (firebaseConfigured && authSessionUser?.uid) {
-        const list = readFirebaseProfiles(authSessionUser.uid);
-        const created = {
-          id: crypto.randomUUID?.() || `fb-${Date.now()}`,
+        return createProfile(authSessionUser.uid, {
           ...data,
           user_email: authSessionUser.email,
-        };
-        writeFirebaseProfiles(authSessionUser.uid, [...list, created]);
-        return created;
+        });
       }
       return base44.entities.Profile.create(data);
     },
@@ -177,10 +192,10 @@ export default function ProfileSelect() {
   const updateMut = useMutation({
     mutationFn: async ({ id, data }) => {
       if (firebaseConfigured && authSessionUser?.uid) {
-        const list = readFirebaseProfiles(authSessionUser.uid);
-        const next = list.map((p) => (p.id === id ? { ...p, ...data } : p));
-        writeFirebaseProfiles(authSessionUser.uid, next);
-        return next.find((p) => p.id === id);
+        return updateProfile(authSessionUser.uid, id, {
+          ...data,
+          user_email: authSessionUser.email,
+        });
       }
       return base44.entities.Profile.update(id, data);
     },
@@ -197,12 +212,7 @@ export default function ProfileSelect() {
   const deleteMut = useMutation({
     mutationFn: async (id) => {
       if (firebaseConfigured && authSessionUser?.uid) {
-        const list = readFirebaseProfiles(authSessionUser.uid);
-        writeFirebaseProfiles(
-          authSessionUser.uid,
-          list.filter((p) => p.id !== id)
-        );
-        return;
+        return deleteProfile(authSessionUser.uid, id);
       }
       return base44.entities.Profile.delete(id);
     },
@@ -213,9 +223,7 @@ export default function ProfileSelect() {
 
   const profileSaveInfoMessage = isLocalPreview
     ? 'Preview local: este perfil será salvo apenas neste navegador.'
-    : firebaseConfigured
-      ? 'Perfis ficam salvos neste navegador até migrarmos para o Firestore.'
-      : null;
+    : null;
 
   const profileSaveBlockedMessage = userLoadError || (!isLoadingUser && !user?.email)
       ? 'Não foi possível carregar sua sessão. Entre novamente para salvar perfis.'
@@ -557,12 +565,13 @@ export default function ProfileSelect() {
                     try {
                       if (firebaseConfigured) {
                         const auth = getFirebaseAuth();
-                        if (auth?.currentUser) {
-                          await deleteUser(auth.currentUser);
+                        if (authSessionUser?.uid) {
+                          await deleteAllProfiles(authSessionUser.uid);
+                          localStorage.removeItem(firebaseProfilesKey(authSessionUser.uid));
                         }
                         localStorage.removeItem('desenhos_active_profile');
-                        if (authSessionUser?.uid) {
-                          localStorage.removeItem(firebaseProfilesKey(authSessionUser.uid));
+                        if (auth?.currentUser) {
+                          await deleteUser(auth.currentUser);
                         }
                       } else {
                         await base44.functions.invoke('deleteMyAccount', {});

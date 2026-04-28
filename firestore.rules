@@ -1,0 +1,36 @@
+rules_version = '2';
+// Implante com: firebase deploy --only firestore:rules
+// Console alternativo: Firebase → Firestore Database → Regras
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Perfis: cada usuário lê e altera apenas os próprios perfis.
+    match /users/{userId}/profiles/{profileId} {
+      allow read, create, update, delete: if isOwner(userId);
+    }
+
+    // Catálogo público.
+    match /series/{seriesId} {
+      allow read: if true;
+      allow write: if isSignedIn();
+    }
+
+    match /episodes/{episodeId} {
+      allow read: if true;
+      allow write: if isSignedIn();
+    }
+
+    match /featured_banners/{bannerId} {
+      allow read: if true;
+      allow write: if isSignedIn();
+    }
+  }
+}
