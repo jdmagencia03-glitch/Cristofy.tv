@@ -1,65 +1,141 @@
 import React, { useState, useRef } from 'react';
-import { base44 } from '@/api/base44Client';
-import { Upload, X, Loader2 } from 'lucide-react';
+import { uploadImageFile } from '@/lib/uploadImage';
+import { Input } from '@/components/ui/input';
+import { toast } from '@/components/ui/use-toast';
+import { Upload, X, Loader2, Link2 } from 'lucide-react';
 
-export default function ImageUpload({ value, onChange, placeholder = "Clique para enviar uma imagem", aspectRatio = "cover" }) {
-  const [uploading, setUploading] = useState(false);
-  const inputRef = useRef(null);
+function looksLikeUrl(str) {
+	if (!str || typeof str !== 'string') return false;
+	const t = str.trim();
+	return /^https?:\/\//i.test(t);
+}
 
-  const handleFileChange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    setUploading(true);
-    const response = await base44.integrations.Core.UploadFile({ file });
-    onChange(response.file_url);
-    setUploading(false);
-  };
+/**
+ * Upload de arquivo → Firebase Storage (URL fixa no projeto) ou URL colada.
+ * Requer login Firebase para upload; regras Storage em `storage.rules`.
+ */
+export default function ImageUpload({
+	value,
+	onChange,
+	placeholder = 'https://...',
+	aspectRatio = 'cover',
+}) {
+	const [uploading, setUploading] = useState(false);
+	const inputRef = useRef(null);
 
-  const heightClass = aspectRatio === 'square' ? 'aspect-square' : 'h-36';
+	const handleFileChange = async (e) => {
+		const file = e.target.files?.[0];
+		if (!file) return;
+		setUploading(true);
+		try {
+			const url = await uploadImageFile(file);
+			onChange(url);
+			toast({
+				title: 'Imagem enviada',
+				description: 'O link foi salvo — não some ao recarregar o site.',
+			});
+		} catch (err) {
+			toast({
+				title: 'Não foi possível enviar',
+				description: err?.message || 'Tente outra imagem ou cole uma URL.',
+				variant: 'destructive',
+			});
+		} finally {
+			setUploading(false);
+			e.target.value = '';
+		}
+	};
 
-  return (
-    <div className="space-y-2">
-      <div
-        onClick={() => !uploading && inputRef.current?.click()}
-        className={`relative w-full ${heightClass} rounded-lg overflow-hidden bg-[#2A2A2A] border-2 border-dashed border-white/10 hover:border-white/30 cursor-pointer transition-colors flex items-center justify-center`}
-      >
-        {value ? (
-          <>
-            <img src={value} alt="" className="w-full h-full object-cover" />
-            <div className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
-              <p className="text-sm text-white font-medium">Trocar imagem</p>
-            </div>
-          </>
-        ) : (
-          <div className="flex flex-col items-center gap-2 text-gray-500">
-            {uploading ? (
-              <Loader2 className="w-8 h-8 animate-spin text-[#E50914]" />
-            ) : (
-              <>
-                <Upload className="w-8 h-8" />
-                <p className="text-xs text-center px-4">{placeholder}</p>
-              </>
-            )}
-          </div>
-        )}
-        {uploading && (
-          <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-            <Loader2 className="w-8 h-8 animate-spin text-[#E50914]" />
-          </div>
-        )}
-      </div>
+	const heightClass = aspectRatio === 'square' ? 'aspect-square' : 'h-36';
 
-      {value && (
-        <button
-          type="button"
-          onClick={() => onChange('')}
-          className="flex items-center gap-1 text-xs text-red-400 hover:text-red-300"
-        >
-          <X className="w-3 h-3" /> Remover imagem
-        </button>
-      )}
+	return (
+		<div className="space-y-3">
+			<div>
+				<p className="text-xs text-gray-400 mb-1">Enviar do computador</p>
+				<div
+					onClick={() => !uploading && inputRef.current?.click()}
+					className="relative w-full h-28 rounded-lg overflow-hidden bg-[#2A2A2A] border-2 border-dashed border-white/15 hover:border-[#E50914]/50 cursor-pointer flex items-center justify-center transition-colors"
+				>
+					{uploading ? (
+						<Loader2 className="w-8 h-8 animate-spin text-[#E50914]" />
+					) : (
+						<div className="flex flex-col items-center gap-1 text-gray-400 px-2 text-center">
+							<Upload className="w-7 h-7" />
+							<span className="text-[11px] leading-tight">
+								Clique para escolher imagem — gera um link permanente (Firebase Storage)
+							</span>
+						</div>
+					)}
+				</div>
+				<p className="text-[10px] text-gray-500 mt-1 leading-snug">
+					Você precisa estar <strong className="text-gray-400">logado</strong>. No plano gratuito há cota de armazenamento;
+					o arquivo vira uma URL HTTPS salva no catálogo (capa/banner não somem).
+				</p>
+				<input
+					ref={inputRef}
+					type="file"
+					accept="image/*"
+					className="hidden"
+					onChange={handleFileChange}
+				/>
+			</div>
 
-      <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
-    </div>
-  );
+			<div className="flex items-start gap-2 rounded-lg border border-white/10 bg-[#222]/80 p-2">
+				<Link2 className="w-4 h-4 text-[#FFC107] shrink-0 mt-2.5" />
+				<div className="flex-1 min-w-0 space-y-1">
+					<p className="text-xs text-gray-400">Ou cole uma URL de imagem</p>
+					<Input
+						type="url"
+						inputMode="url"
+						autoComplete="off"
+						placeholder={placeholder}
+						value={value || ''}
+						onChange={(e) => onChange(e.target.value.trim())}
+						className="bg-[#2A2A2A] border-white/10 text-white text-sm"
+					/>
+					<p className="text-[10px] text-gray-500 leading-snug">
+						Alternativa sem upload: Imgur, ImgBB, Bunny, link direto, etc.
+					</p>
+				</div>
+			</div>
+
+			<div
+				className={`relative w-full ${heightClass} rounded-lg overflow-hidden bg-[#2A2A2A] border border-white/10 flex items-center justify-center`}
+			>
+				{looksLikeUrl(value) ? (
+					<>
+						<img
+							src={value}
+							alt=""
+							className="w-full h-full object-cover"
+							onError={(e) => {
+								e.target.style.display = 'none';
+							}}
+						/>
+						<div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+							<button
+								type="button"
+								onClick={() => onChange('')}
+								className="text-xs bg-black/70 text-white px-3 py-1.5 rounded-md hover:bg-red-900/80"
+							>
+								Limpar
+							</button>
+						</div>
+					</>
+				) : (
+					<p className="text-xs text-gray-600 px-4 text-center">Prévia aparece com URL válida ou após o upload</p>
+				)}
+			</div>
+
+			{value && (
+				<button
+					type="button"
+					onClick={() => onChange('')}
+					className="flex items-center gap-1 text-xs text-red-400 hover:text-red-300"
+				>
+					<X className="w-3 h-3" /> Remover imagem
+				</button>
+			)}
+		</div>
+	);
 }

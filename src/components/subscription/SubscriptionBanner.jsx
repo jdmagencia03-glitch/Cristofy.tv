@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AlertTriangle, X, Crown, Gift } from 'lucide-react';
+import { AlertTriangle, X, Gift } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export default function SubscriptionBanner({ subscription, isActive, isTrial }) {

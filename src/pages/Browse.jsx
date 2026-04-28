@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { base44 } from '@/api/base44Client';
+import { listPublishedSeries } from '@/api/catalog';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { Play, Filter } from 'lucide-react';
@@ -12,7 +12,7 @@ export default function Browse() {
 
   const { data: allSeries = [], isLoading } = useQuery({
     queryKey: ['series'],
-    queryFn: () => base44.entities.Series.filter({ published: true }),
+    queryFn: () => listPublishedSeries(),
   });
 
   const categories = useMemo(() => {

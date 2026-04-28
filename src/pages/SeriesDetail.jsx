@@ -1,5 +1,11 @@
 import React, { useMemo, useState } from 'react';
 import { base44 } from '@/api/base44Client';
+import {
+  catalogUsesFirestore,
+  getSeriesById,
+  listEpisodesBySeries,
+} from '@/api/catalog';
+import * as userLib from '@/lib/userLibrary';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { Play, Plus, Check, CheckCircle2, Lock } from 'lucide-react';
@@ -12,43 +18,59 @@ export default function SeriesDetail() {
   const queryClient = useQueryClient();
   const activeProfile = JSON.parse(localStorage.getItem('desenhos_active_profile') || 'null');
   const [selectedSeason, setSelectedSeason] = useState(1);
+  const fsCatalog = catalogUsesFirestore();
 
   const { data: series } = useQuery({
     queryKey: ['series', seriesId],
-    queryFn: async () => {
-      const list = await base44.entities.Series.filter({ id: seriesId });
-      return list[0];
-    },
+    queryFn: async () => getSeriesById(seriesId),
     enabled: !!seriesId,
   });
 
   const { data: episodes = [] } = useQuery({
     queryKey: ['episodes', seriesId],
-    queryFn: () => base44.entities.Episode.filter({ series_id: seriesId }),
+    queryFn: () => listEpisodesBySeries(seriesId),
     enabled: !!seriesId,
   });
 
   const { data: myListItems = [] } = useQuery({
     queryKey: ['myList', activeProfile?.id],
-    queryFn: () => activeProfile?.id ? base44.entities.MyList.filter({ profile_id: activeProfile.id }) : [],
+    queryFn: () => {
+      if (!activeProfile?.id) return [];
+      if (fsCatalog) return Promise.resolve(userLib.getMyList(activeProfile.id));
+      return base44.entities.MyList.filter({ profile_id: activeProfile.id });
+    },
     enabled: !!activeProfile?.id,
   });
 
   const { data: history = [] } = useQuery({
     queryKey: ['watchHistory', activeProfile?.id, seriesId],
-    queryFn: () => activeProfile?.id ? base44.entities.WatchHistory.filter({ profile_id: activeProfile.id, series_id: seriesId }) : [],
+    queryFn: () => {
+      if (!activeProfile?.id || !seriesId) return [];
+      if (fsCatalog) return Promise.resolve(userLib.getWatchHistoryBySeries(activeProfile.id, seriesId));
+      return base44.entities.WatchHistory.filter({ profile_id: activeProfile.id, series_id: seriesId });
+    },
     enabled: !!activeProfile?.id && !!seriesId,
   });
 
   const isInList = myListItems.some(m => m.series_id === seriesId);
 
   const addMut = useMutation({
-    mutationFn: () => base44.entities.MyList.create({ profile_id: activeProfile.id, series_id: seriesId }),
+    mutationFn: () => {
+      if (fsCatalog) {
+        userLib.addMyListItem(activeProfile.id, seriesId);
+        return Promise.resolve();
+      }
+      return base44.entities.MyList.create({ profile_id: activeProfile.id, series_id: seriesId });
+    },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['myList'] }),
   });
 
   const removeMut = useMutation({
     mutationFn: async () => {
+      if (fsCatalog) {
+        userLib.removeMyListBySeries(activeProfile.id, seriesId);
+        return;
+      }
       const item = myListItems.find(m => m.series_id === seriesId);
       if (item) await base44.entities.MyList.delete(item.id);
     },
@@ -86,6 +108,18 @@ export default function SeriesDetail() {
   const markWatchedMut = useMutation({
     mutationFn: async (ep) => {
       const existing = history.find(h => h.episode_id === ep.id);
+      if (fsCatalog) {
+        const completed = !existing?.completed;
+        userLib.upsertWatchHistory(activeProfile.id, {
+          profile_id: activeProfile.id,
+          episode_id: ep.id,
+          series_id: seriesId,
+          watched_seconds: completed ? (ep.duration || 0) : (existing?.watched_seconds || 0),
+          total_duration: ep.duration || 0,
+          completed,
+        });
+        return;
+      }
       if (existing) {
         await base44.entities.WatchHistory.update(existing.id, { completed: !existing.completed, watched_seconds: existing.completed ? existing.watched_seconds : (ep.duration || 0) });
       } else {

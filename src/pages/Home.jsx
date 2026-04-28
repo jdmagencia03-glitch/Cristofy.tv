@@ -1,5 +1,12 @@
 import React, { useMemo } from 'react';
 import { base44 } from '@/api/base44Client';
+import {
+  catalogUsesFirestore,
+  listEpisodesForHome,
+  listFeaturedBannersHome,
+  listPublishedSeries,
+} from '@/api/catalog';
+import * as userLib from '@/lib/userLibrary';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import HeroBanner from '../components/home/HeroBanner';
 import SeriesCarousel from '../components/home/SeriesCarousel';
@@ -8,36 +15,51 @@ import ContinueWatching from '../components/home/ContinueWatching';
 export default function Home() {
   const queryClient = useQueryClient();
   const activeProfile = JSON.parse(localStorage.getItem('desenhos_active_profile') || 'null');
+  const fsCatalog = catalogUsesFirestore();
 
   const { data: allSeries = [] } = useQuery({
     queryKey: ['series'],
-    queryFn: () => base44.entities.Series.filter({ published: true }),
+    queryFn: () => listPublishedSeries(),
   });
 
   const { data: bannerItems = [] } = useQuery({
     queryKey: ['featuredBanner'],
-    queryFn: () => base44.entities.FeaturedBanner.filter({ active: true }, 'order', 5),
+    queryFn: () => listFeaturedBannersHome(),
   });
 
   const { data: episodes = [] } = useQuery({
     queryKey: ['episodes'],
-    queryFn: () => base44.entities.Episode.list('-season', 500),
+    queryFn: () => listEpisodesForHome(500),
   });
 
   const { data: myListItems = [] } = useQuery({
     queryKey: ['myList', activeProfile?.id],
-    queryFn: () => activeProfile?.id ? base44.entities.MyList.filter({ profile_id: activeProfile.id }) : [],
+    queryFn: () => {
+      if (!activeProfile?.id) return [];
+      if (fsCatalog) return Promise.resolve(userLib.getMyList(activeProfile.id));
+      return base44.entities.MyList.filter({ profile_id: activeProfile.id });
+    },
     enabled: !!activeProfile?.id,
   });
 
   const { data: history = [] } = useQuery({
     queryKey: ['watchHistory', activeProfile?.id],
-    queryFn: () => activeProfile?.id ? base44.entities.WatchHistory.filter({ profile_id: activeProfile.id }, '-updated_date', 20) : [],
+    queryFn: () => {
+      if (!activeProfile?.id) return [];
+      if (fsCatalog) return Promise.resolve(userLib.getWatchHistory(activeProfile.id, 20));
+      return base44.entities.WatchHistory.filter({ profile_id: activeProfile.id }, '-updated_date', 20);
+    },
     enabled: !!activeProfile?.id,
   });
 
   const addToListMut = useMutation({
-    mutationFn: (seriesId) => base44.entities.MyList.create({ profile_id: activeProfile.id, series_id: seriesId }),
+    mutationFn: (seriesId) => {
+      if (fsCatalog) {
+        userLib.addMyListItem(activeProfile.id, seriesId);
+        return Promise.resolve();
+      }
+      return base44.entities.MyList.create({ profile_id: activeProfile.id, series_id: seriesId });
+    },
     onMutate: async (seriesId) => {
       await queryClient.cancelQueries({ queryKey: ['myList', activeProfile?.id] });
       const prev = queryClient.getQueryData(['myList', activeProfile?.id]);
@@ -53,6 +75,10 @@ export default function Home() {
 
   const removeFromListMut = useMutation({
     mutationFn: async (seriesId) => {
+      if (fsCatalog) {
+        userLib.removeMyListBySeries(activeProfile.id, seriesId);
+        return;
+      }
       const item = myListItems.find(m => m.series_id === seriesId);
       if (item) await base44.entities.MyList.delete(item.id);
     },

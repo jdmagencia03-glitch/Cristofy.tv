@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
-import { Plus, Pencil, Trash2, ArrowLeft, Eye, EyeOff, Star } from 'lucide-react';
+import { Plus, Pencil, Trash2, ArrowLeft, EyeOff, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -130,12 +130,20 @@ export default function AdminSeries() {
                 </Select>
               </div>
               <div>
-                <p className="text-xs text-gray-400 mb-1">Capa da Série</p>
-                <ImageUpload value={form.cover_url} onChange={v => setForm({ ...form, cover_url: v })} placeholder="Clique para enviar a capa" />
+                <p className="text-xs text-gray-400 mb-1">Capa da série (cartazes, grades)</p>
+                <ImageUpload
+                  value={form.cover_url}
+                  onChange={(v) => setForm({ ...form, cover_url: v })}
+                  placeholder="https://... (URL direta da imagem da capa)"
+                />
               </div>
               <div>
-                <p className="text-xs text-gray-400 mb-1">Banner</p>
-                <ImageUpload value={form.banner_url} onChange={v => setForm({ ...form, banner_url: v })} placeholder="Clique para enviar o banner" />
+                <p className="text-xs text-gray-400 mb-1">Banner (hero / topo da página da série e carrossel inicial)</p>
+                <ImageUpload
+                  value={form.banner_url}
+                  onChange={(v) => setForm({ ...form, banner_url: v })}
+                  placeholder="https://... (imagem larga 16:9 recomendada)"
+                />
               </div>
               <div className="flex items-center gap-6">
                 <label className="flex items-center gap-2 text-sm"><Switch checked={form.published} onCheckedChange={v => setForm({ ...form, published: v })} /> Publicada</label>

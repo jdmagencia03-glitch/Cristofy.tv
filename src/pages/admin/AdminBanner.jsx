@@ -59,7 +59,10 @@ export default function AdminBanner() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-bold text-white">Banner Principal</h1>
-            <p className="text-gray-400 text-sm mt-1">Configure até 5 séries no carrossel da página inicial</p>
+            <p className="text-gray-400 text-sm mt-1">
+              Configure até 5 séries no carrossel da página inicial. As imagens grandes usam o{' '}
+              <strong className="text-gray-300">banner</strong> e a <strong className="text-gray-300">capa</strong> de cada série — defina as URLs em Admin → Séries (sem Firebase Storage).
+            </p>
           </div>
           <Link to="/Admin">
             <Button variant="outline" className="border-white/10 text-gray-300 hover:text-white">← Voltar</Button>

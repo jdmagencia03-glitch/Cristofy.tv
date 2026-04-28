@@ -1,5 +1,12 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { base44 } from '@/api/base44Client';
+import {
+  catalogUsesFirestore,
+  getEpisodeById,
+  getSeriesById,
+  listEpisodesBySeries,
+} from '@/api/catalog';
+import * as userLib from '@/lib/userLibrary';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Play, SkipForward, List, X } from 'lucide-react';
@@ -42,42 +49,50 @@ export default function Player() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const activeProfile = JSON.parse(localStorage.getItem('desenhos_active_profile') || 'null');
+  const fsCatalog = catalogUsesFirestore();
   const progressInterval = useRef(null);
   const [showSidebar, setShowSidebar] = useState(false);
   const [autoplayCountdown, setAutoplayCountdown] = useState(null);
 
   const { data: episode } = useQuery({
     queryKey: ['episode', episodeId],
-    queryFn: async () => {
-      const list = await base44.entities.Episode.filter({ id: episodeId });
-      return list[0];
-    },
+    queryFn: () => getEpisodeById(episodeId),
     enabled: !!episodeId,
   });
 
   const { data: series } = useQuery({
     queryKey: ['series', episode?.series_id],
-    queryFn: async () => {
-      const list = await base44.entities.Series.filter({ id: episode.series_id });
-      return list[0];
-    },
+    queryFn: () => getSeriesById(episode.series_id),
     enabled: !!episode?.series_id,
   });
 
   const { data: allEpisodes = [] } = useQuery({
     queryKey: ['seriesEpisodes', episode?.series_id],
-    queryFn: () => base44.entities.Episode.filter({ series_id: episode.series_id }),
+    queryFn: () => listEpisodesBySeries(episode.series_id),
     enabled: !!episode?.series_id,
   });
 
   const { data: existingHistory = [] } = useQuery({
     queryKey: ['watchHistoryEp', activeProfile?.id, episodeId],
-    queryFn: () => base44.entities.WatchHistory.filter({ profile_id: activeProfile.id, episode_id: episodeId }),
+    queryFn: () => {
+      if (!activeProfile?.id || !episodeId) return [];
+      if (fsCatalog) return Promise.resolve(userLib.getWatchHistoryByEpisode(activeProfile.id, episodeId));
+      return base44.entities.WatchHistory.filter({ profile_id: activeProfile.id, episode_id: episodeId });
+    },
     enabled: !!activeProfile?.id && !!episodeId,
   });
 
   const saveHistoryMut = useMutation({
     mutationFn: async (data) => {
+      if (fsCatalog) {
+        userLib.upsertWatchHistory(activeProfile.id, {
+          profile_id: activeProfile.id,
+          episode_id: episodeId,
+          series_id: episode?.series_id,
+          ...data,
+        });
+        return;
+      }
       if (existingHistory.length > 0) {
         await base44.entities.WatchHistory.update(existingHistory[0].id, data);
       } else {
@@ -89,7 +104,10 @@ export default function Player() {
         });
       }
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['watchHistoryEp'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['watchHistoryEp'] });
+      queryClient.invalidateQueries({ queryKey: ['watchHistory'] });
+    },
   });
 
   const sortedEpisodes = useMemo(() =>
@@ -201,8 +219,6 @@ export default function Player() {
                 allowFullScreen
                 webkitallowfullscreen="true"
                 mozallowfullscreen="true"
-                x5-playsinline="true"
-                x5-video-player-fullscreen="true"
               />
             ) : isBunnyStream ? (
               <video
@@ -212,9 +228,6 @@ export default function Player() {
                 controls
                 autoPlay
                 playsInline
-                x5-playsinline="true"
-                x5-video-player-type="h5"
-                x5-video-player-fullscreen="true"
                 onEnded={() => {
                   if (nextEpisode) {
                     let countdown = 3;
@@ -241,8 +254,6 @@ export default function Player() {
                 allowFullScreen
                 webkitallowfullscreen="true"
                 mozallowfullscreen="true"
-                x5-playsinline="true"
-                x5-video-player-fullscreen="true"
               />
             )
           ) : (

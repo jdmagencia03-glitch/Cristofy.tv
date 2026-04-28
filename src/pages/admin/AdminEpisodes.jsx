@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import ImageUpload from '@/components/admin/ImageUpload';
 
 export default function AdminEpisodes() {
   const params = new URLSearchParams(window.location.search);
@@ -147,7 +148,15 @@ export default function AdminEpisodes() {
                   <p className="text-xs text-yellow-500">⚡ Detectado como embed externo — será exibido via iframe no player.</p>
                 )}
               </div>
-              <Input placeholder="URL da Thumbnail" value={form.thumbnail_url} onChange={e => setForm({ ...form, thumbnail_url: e.target.value })} className="bg-[#2A2A2A] border-none" />
+              <div>
+                <p className="text-xs text-gray-400 mb-1">Thumbnail (miniatura)</p>
+                <ImageUpload
+                  value={form.thumbnail_url}
+                  onChange={(v) => setForm({ ...form, thumbnail_url: v })}
+                  placeholder="https://... (miniatura do episódio)"
+                  aspectRatio="square"
+                />
+              </div>
               <Button onClick={handleSubmit} className="w-full bg-[#E50914] hover:bg-[#FF3D3D]">{editing ? 'Salvar' : 'Criar'}</Button>
             </div>
           </DialogContent>

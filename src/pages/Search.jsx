@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { base44 } from '@/api/base44Client';
+import { catalogUsesFirestore, listPublishedSeries } from '@/api/catalog';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { Search as SearchIcon, X, TrendingUp, Play } from 'lucide-react';
@@ -9,14 +10,17 @@ import { motion, AnimatePresence } from 'framer-motion';
 export default function Search() {
   const [query, setQuery] = useState('');
 
+  const fs = catalogUsesFirestore();
+
   const { data: allSeries = [] } = useQuery({
     queryKey: ['series'],
-    queryFn: () => base44.entities.Series.filter({ published: true }),
+    queryFn: () => listPublishedSeries(),
   });
 
   const { data: popularTerms = [] } = useQuery({
     queryKey: ['searchTerms'],
-    queryFn: () => base44.entities.SearchTerm.list('-frequency', 10),
+    queryFn: () => (fs ? Promise.resolve([]) : base44.entities.SearchTerm.list('-frequency', 10)),
+    enabled: !fs,
   });
 
   const results = useMemo(() => {
@@ -30,6 +34,7 @@ export default function Search() {
   }, [query, allSeries]);
 
   const logSearch = async () => {
+    if (fs) return;
     if (!query.trim()) return;
     const existing = popularTerms.find(t => t.term?.toLowerCase() === query.trim().toLowerCase());
     if (existing) {
