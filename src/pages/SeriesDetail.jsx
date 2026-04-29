@@ -138,13 +138,26 @@ export default function SeriesDetail() {
   }
 
   const firstEp = seasonEpisodes[0];
+  const bannerDesktop = series.banner_url || series.banner_mobile_url;
+  const bannerMobile = series.banner_mobile_url || series.banner_url;
 
   return (
     <div className="min-h-screen bg-[#141414]">
       {/* Banner — começa do topo (Navbar stack é transparente/sobreposta) */}
       <div className="relative h-[55vh] md:h-[70vh]">
-        {series.banner_url ? (
-          <img src={series.banner_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
+        {bannerDesktop || bannerMobile ? (
+          <>
+            <img
+              src={bannerMobile || bannerDesktop}
+              alt=""
+              className="absolute inset-0 w-full h-full object-cover md:hidden"
+            />
+            <img
+              src={bannerDesktop || bannerMobile}
+              alt=""
+              className="absolute inset-0 w-full h-full object-cover hidden md:block"
+            />
+          </>
         ) : series.cover_url ? (
           <img src={series.cover_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
         ) : (

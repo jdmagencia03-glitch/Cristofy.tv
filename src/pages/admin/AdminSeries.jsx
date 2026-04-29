@@ -30,6 +30,7 @@ export default function AdminSeries() {
     year: '',
     cover_url: '',
     banner_url: '',
+    banner_mobile_url: '',
     published: true,
     featured: false,
     age_rating: 'Livre',
@@ -77,6 +78,7 @@ export default function AdminSeries() {
       year: '',
       cover_url: '',
       banner_url: '',
+      banner_mobile_url: '',
       published: true,
       featured: false,
       age_rating: 'Livre',
@@ -90,7 +92,7 @@ export default function AdminSeries() {
     setEditing(s);
     setForm({
       title: s.title || '', description: s.description || '', category: s.category || '',
-      year: s.year || '', cover_url: s.cover_url || '', banner_url: s.banner_url || '',
+      year: s.year || '', cover_url: s.cover_url || '', banner_url: s.banner_url || '', banner_mobile_url: s.banner_mobile_url || '',
       published: s.published !== false, featured: s.featured || false, age_rating: s.age_rating || 'Livre',
       highlighted_home_section: s.highlighted_home_section || null,
       content_type: s.content_type === 'movie' ? 'movie' : 'series',
@@ -199,11 +201,19 @@ export default function AdminSeries() {
                 />
               </div>
               <div>
-                <p className="text-xs text-gray-400 mb-1">Banner (hero / topo da página da série e carrossel inicial)</p>
+                <p className="text-xs text-gray-400 mb-1">Banner PC / desktop (home hero e topo da página — largura grande, ex. 16:9 ou 21:9)</p>
                 <ImageUpload
                   value={form.banner_url}
                   onChange={(v) => setForm({ ...form, banner_url: v })}
-                  placeholder="https://... (imagem larga 16:9 recomendada)"
+                  placeholder="Upload ou URL — exibido em telas md e maiores"
+                />
+              </div>
+              <div>
+                <p className="text-xs text-gray-400 mb-1">Banner mobile (opcional — retrato/9:16; se vazio, usa o banner PC)</p>
+                <ImageUpload
+                  value={form.banner_mobile_url}
+                  onChange={(v) => setForm({ ...form, banner_mobile_url: v })}
+                  placeholder="Upload ou URL — só no celular"
                 />
               </div>
               <div className="flex items-center gap-6">

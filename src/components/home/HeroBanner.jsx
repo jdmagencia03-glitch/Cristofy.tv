@@ -5,6 +5,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const SLIDE_DURATION = 10000;
 
+/** PC: banner_url; mobile: banner_mobile_url; cada um faz fallback no outro se faltar. */
+function seriesBannerSources(series) {
+  const desktop = series.banner_url || series.banner_mobile_url || null;
+  const mobile = series.banner_mobile_url || series.banner_url || null;
+  return { desktop, mobile };
+}
+
 export default function HeroBanner({ seriesList }) {
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState(1);
@@ -27,6 +34,7 @@ export default function HeroBanner({ seriesList }) {
   if (!items.length) return null;
 
   const series = items[current];
+  const { desktop: bannerDesktop, mobile: bannerMobile } = seriesBannerSources(series);
 
   const goTo = (index) => {
     setDirection(index > current ? 1 : -1);
@@ -50,13 +58,21 @@ export default function HeroBanner({ seriesList }) {
           transition={{ duration: 0.6, ease: 'easeInOut' }}
           className="absolute inset-0"
         >
-          {series.banner_url ? (
-            <img
-              src={series.banner_url}
-              alt={series.title}
-              className="absolute inset-0 w-full h-full object-cover object-center"
-              style={{ imageRendering: 'auto' }}
-            />
+          {bannerDesktop || bannerMobile ? (
+            <>
+              <img
+                src={bannerMobile || bannerDesktop}
+                alt=""
+                className="absolute inset-0 w-full h-full object-cover object-center md:hidden"
+                style={{ imageRendering: 'auto' }}
+              />
+              <img
+                src={bannerDesktop || bannerMobile}
+                alt=""
+                className="absolute inset-0 w-full h-full object-cover object-center hidden md:block"
+                style={{ imageRendering: 'auto' }}
+              />
+            </>
           ) : (
             <div className="absolute inset-0 bg-gradient-to-br from-[#1a0000] via-[#0F0F0F] to-[#1a1a00]" />
           )}

@@ -70,8 +70,10 @@ export default function AdminBanner() {
           <div>
             <h1 className="text-2xl font-bold text-white">Banner Principal</h1>
             <p className="text-gray-400 text-sm mt-1">
-              Adicione quantos slides quiser (séries ou filmes publicados). As imagens grandes usam o{' '}
-              <strong className="text-gray-300">banner</strong> e a <strong className="text-gray-300">capa</strong> de cada título — defina em Admin → Séries e filmes.
+              Adicione quantos slides quiser (séries ou filmes publicados). O carrossel usa o{' '}
+              <strong className="text-gray-300">banner PC</strong>, o{' '}
+              <strong className="text-gray-300">banner mobile</strong> (opcional) e a{' '}
+              <strong className="text-gray-300">capa</strong> — defina em Admin → Séries e filmes.
             </p>
           </div>
           <Link to="/Admin">
