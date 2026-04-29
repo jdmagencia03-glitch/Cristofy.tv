@@ -131,8 +131,7 @@ export async function listFeaturedBannersActive(db) {
 	return snap.docs
 		.map(docToObject)
 		.filter((b) => b.active !== false)
-		.sort((a, b) => (a.order || 0) - (b.order || 0))
-		.slice(0, 5);
+		.sort((a, b) => (a.order || 0) - (b.order || 0));
 }
 
 export async function listFeaturedBannersAdmin(db) {

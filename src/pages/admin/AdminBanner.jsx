@@ -45,11 +45,15 @@ export default function AdminBanner() {
   });
 
   const sortedBanners = [...banners].sort((a, b) => a.order - b.order);
-  const usedOrders = new Set(sortedBanners.map(b => b.order));
   const maxOrder = sortedBanners.length > 0 ? Math.max(...sortedBanners.map(b => b.order)) : 0;
-  const canAdd = sortedBanners.length < 5;
 
   const seriesById = Object.fromEntries(allSeries.map(s => [s.id, s]));
+
+  const formatTitleLabel = (s) => {
+    if (!s?.title) return '';
+    const kind = s.content_type === 'movie' ? 'Filme' : 'Série';
+    return `${s.title} (${kind})`;
+  };
 
   const swapOrder = (indexA, indexB) => {
     const a = sortedBanners[indexA];
@@ -66,8 +70,8 @@ export default function AdminBanner() {
           <div>
             <h1 className="text-2xl font-bold text-white">Banner Principal</h1>
             <p className="text-gray-400 text-sm mt-1">
-              Configure até 5 séries no carrossel da página inicial. As imagens grandes usam o{' '}
-              <strong className="text-gray-300">banner</strong> e a <strong className="text-gray-300">capa</strong> de cada série — defina as URLs em Admin → Séries (URL ou upload no Firebase Storage).
+              Adicione quantos slides quiser (séries ou filmes publicados). As imagens grandes usam o{' '}
+              <strong className="text-gray-300">banner</strong> e a <strong className="text-gray-300">capa</strong> de cada título — defina em Admin → Séries e filmes.
             </p>
           </div>
           <Link to="/Admin">
@@ -102,8 +106,10 @@ export default function AdminBanner() {
 
                   {/* Title */}
                   <div className="flex-1 min-w-0">
-                    <p className="text-white font-semibold truncate">{series?.title || 'Série não encontrada'}</p>
-                    <p className="text-gray-500 text-xs truncate">{series?.category || ''}</p>
+                    <p className="text-white font-semibold truncate">{series?.title || 'Título não encontrado'}</p>
+                    <p className="text-gray-500 text-xs truncate">
+                      {[series?.content_type === 'movie' ? 'Filme' : 'Série', series?.category].filter(Boolean).join(' • ')}
+                    </p>
                   </div>
 
                   {/* Toggle active */}
@@ -145,18 +151,17 @@ export default function AdminBanner() {
             })}
 
             {/* Add new slot */}
-            {canAdd && (
-              addingSlot === null ? (
+            {addingSlot === null ? (
                 <button
                   onClick={() => setAddingSlot(maxOrder + 1)}
                   className="w-full flex items-center justify-center gap-2 py-4 rounded-xl border-2 border-dashed border-white/10 text-gray-400 hover:text-white hover:border-white/30 transition-all"
                 >
                   <Plus className="w-5 h-5" />
-                  Adicionar série ao banner ({sortedBanners.length}/5)
+                  Adicionar ao banner ({sortedBanners.length} slide{sortedBanners.length !== 1 ? 's' : ''})
                 </button>
               ) : (
                 <div className="bg-[#1A1A1A] rounded-xl p-4 border border-[#E50914]/30">
-                  <p className="text-gray-400 text-sm mb-3">Escolha uma série para o slot {addingSlot}:</p>
+                  <p className="text-gray-400 text-sm mb-3">Escolha uma série ou filme publicado (ordem {addingSlot}):</p>
                   <div className="flex gap-3">
                     <div className="flex-1">
                       <Select
@@ -165,14 +170,14 @@ export default function AdminBanner() {
                         }}
                       >
                         <SelectTrigger className="bg-[#2A2A2A] border-white/10 text-white">
-                          <SelectValue placeholder="Selecione uma série..." />
+                          <SelectValue placeholder="Selecione série ou filme..." />
                         </SelectTrigger>
                         <SelectContent className="bg-[#2A2A2A] border-white/10">
                           {allSeries
                             .filter(s => !banners.some(b => b.series_id === s.id))
                             .map(s => (
                               <SelectItem key={s.id} value={s.id} className="text-white hover:bg-white/10">
-                                {s.title}
+                                {formatTitleLabel(s)}
                               </SelectItem>
                             ))}
                         </SelectContent>
@@ -187,11 +192,10 @@ export default function AdminBanner() {
                     </Button>
                   </div>
                 </div>
-              )
-            )}
+              )}
 
-            {sortedBanners.length === 0 && !canAdd === false && (
-              <p className="text-center text-gray-500 py-8">Nenhuma série no banner ainda.</p>
+            {sortedBanners.length === 0 && (
+              <p className="text-center text-gray-500 py-8">Nenhum título no banner ainda. Publique uma série ou filme em Admin → Séries e filmes.</p>
             )}
           </div>
         )}

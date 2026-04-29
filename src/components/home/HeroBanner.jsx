@@ -75,9 +75,14 @@ export default function HeroBanner({ seriesList }) {
             transition={{ duration: 0.5, ease: 'easeOut', delay: 0.15 }}
             className="max-w-[75%] md:max-w-2xl"
           >
-            <h1 className="text-xl md:text-2xl lg:text-3xl font-black leading-tight mb-4 drop-shadow-2xl">
-              {series.title}
-            </h1>
+            <div className="flex flex-wrap items-center gap-2 mb-4">
+              <h1 className="text-xl md:text-2xl lg:text-3xl font-black leading-tight drop-shadow-2xl">
+                {series.title}
+              </h1>
+              {series.content_type === 'movie' && (
+                <span className="text-[10px] md:text-xs uppercase tracking-wider px-2 py-0.5 rounded bg-white/15 text-white/90 shrink-0">Filme</span>
+              )}
+            </div>
             {series.description && (
               <p className="text-gray-300 mb-3 leading-snug
                 line-clamp-2 text-xs

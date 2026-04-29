@@ -108,7 +108,7 @@ export default function AdminDashboard() {
             {[
               { label: 'Dashboard de Métricas', to: '/AdminMetrics', icon: BarChart3 },
               { label: 'Banner Principal (Destaques)', to: '/AdminBanner', icon: LayoutDashboard },
-              { label: 'Gerenciar Séries & Episódios', to: '/AdminSeries', icon: Tv },
+              { label: 'Séries, filmes e episódios', to: '/AdminSeries', icon: Tv },
               { label: 'Gerenciar Usuários', to: '/AdminUsers', icon: Users },
               { label: 'Códigos de Acesso', to: '/AdminCodes', icon: Key },
               { label: 'Propostas de Conteúdo', to: '/AdminProposals', icon: Lightbulb },

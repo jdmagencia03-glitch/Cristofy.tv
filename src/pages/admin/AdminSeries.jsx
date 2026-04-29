@@ -20,7 +20,19 @@ export default function AdminSeries() {
   const queryClient = useQueryClient();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState(null);
-  const [form, setForm] = useState({ title: '', description: '', category: '', year: '', cover_url: '', banner_url: '', published: true, featured: false, age_rating: 'Livre', highlighted_home_section: null });
+  const [form, setForm] = useState({
+    title: '',
+    description: '',
+    category: '',
+    year: '',
+    cover_url: '',
+    banner_url: '',
+    published: true,
+    featured: false,
+    age_rating: 'Livre',
+    highlighted_home_section: null,
+    content_type: 'series',
+  });
 
   const { data: series = [], isLoading } = useQuery({
     queryKey: ['adminSeries'],
@@ -44,7 +56,19 @@ export default function AdminSeries() {
 
   const openCreate = () => {
     setEditing(null);
-    setForm({ title: '', description: '', category: '', year: '', cover_url: '', banner_url: '', published: true, featured: false, age_rating: 'Livre', highlighted_home_section: null });
+    setForm({
+      title: '',
+      description: '',
+      category: '',
+      year: '',
+      cover_url: '',
+      banner_url: '',
+      published: true,
+      featured: false,
+      age_rating: 'Livre',
+      highlighted_home_section: null,
+      content_type: 'series',
+    });
     setDialogOpen(true);
   };
 
@@ -55,6 +79,7 @@ export default function AdminSeries() {
       year: s.year || '', cover_url: s.cover_url || '', banner_url: s.banner_url || '',
       published: s.published !== false, featured: s.featured || false, age_rating: s.age_rating || 'Livre',
       highlighted_home_section: s.highlighted_home_section || null,
+      content_type: s.content_type === 'movie' ? 'movie' : 'series',
     });
     setDialogOpen(true);
   };
@@ -75,9 +100,9 @@ export default function AdminSeries() {
       <div className="max-w-6xl mx-auto">
         <div className="flex items-center gap-4 mb-6">
           <Link to="/Admin" className="text-gray-400 hover:text-white"><ArrowLeft className="w-5 h-5" /></Link>
-          <h1 className="text-2xl font-bold flex-1">Séries</h1>
+          <h1 className="text-2xl font-bold flex-1">Séries e filmes</h1>
           <Button onClick={openCreate} className="bg-[#E50914] hover:bg-[#FF3D3D]">
-            <Plus className="w-4 h-4 mr-2" /> Nova Série
+            <Plus className="w-4 h-4 mr-2" /> Novo título
           </Button>
         </div>
 
@@ -92,8 +117,11 @@ export default function AdminSeries() {
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <h3 className="font-semibold truncate">{s.title}</h3>
+                  {s.content_type === 'movie' && (
+                    <span className="text-[10px] uppercase tracking-wide px-2 py-0.5 rounded bg-[#0057FF]/25 text-[#5eb0ff] shrink-0">Filme</span>
+                  )}
                   {s.featured && <Star className="w-4 h-4 text-[#FFC107] fill-current shrink-0" />}
                   {!s.published && <EyeOff className="w-4 h-4 text-gray-500 shrink-0" />}
                 </div>
@@ -101,17 +129,17 @@ export default function AdminSeries() {
               </div>
               <div className="flex items-center gap-2 shrink-0">
                 <Link to={`/AdminEpisodes?seriesId=${s.id}`} className="text-xs text-[#E50914] hover:text-[#FF3D3D] px-3 py-1 border border-[#E50914] rounded">
-                  Episódios
+                  {s.content_type === 'movie' ? 'Vídeo' : 'Episódios'}
                 </Link>
                 <button onClick={() => openEdit(s)} className="p-2 text-gray-400 hover:text-white"><Pencil className="w-4 h-4" /></button>
-                <button onClick={() => { if (confirm('Excluir série?')) deleteMut.mutate(s.id); }} className="p-2 text-gray-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button>
+                <button onClick={() => { if (confirm('Excluir este título?')) deleteMut.mutate(s.id); }} className="p-2 text-gray-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button>
               </div>
             </div>
           ))}
           {series.length === 0 && !isLoading && (
             <div className="text-center py-12 text-gray-500">
-              <p>Nenhuma série cadastrada.</p>
-              <Button onClick={openCreate} className="mt-4 bg-[#E50914] hover:bg-[#FF3D3D]">Criar primeira série</Button>
+              <p>Nenhuma série ou filme cadastrado.</p>
+              <Button onClick={openCreate} className="mt-4 bg-[#E50914] hover:bg-[#FF3D3D]">Criar primeiro título</Button>
             </div>
           )}
         </div>
@@ -119,9 +147,19 @@ export default function AdminSeries() {
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogContent className="bg-[#1A1A1A] border-white/10 text-white max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>{editing ? 'Editar Série' : 'Nova Série'}</DialogTitle>
+              <DialogTitle>{editing ? (form.content_type === 'movie' ? 'Editar filme' : 'Editar série') : 'Novo título'}</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
+              <div>
+                <p className="text-xs text-gray-400 mb-1">Tipo</p>
+                <Select value={form.content_type} onValueChange={(v) => setForm({ ...form, content_type: v })}>
+                  <SelectTrigger className="bg-[#2A2A2A] border-none"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="series">Série</SelectItem>
+                    <SelectItem value="movie">Filme</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               <Input placeholder="Título" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} className="bg-[#2A2A2A] border-none" />
               <Textarea placeholder="Descrição" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} className="bg-[#2A2A2A] border-none h-24" />
               <Input placeholder="Categorias (ex: Anime, Ação)" value={form.category} onChange={e => setForm({ ...form, category: e.target.value })} className="bg-[#2A2A2A] border-none" />

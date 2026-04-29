@@ -122,17 +122,26 @@ export default function Home() {
     return fallback ? [fallback] : [];
   }, [bannerItems, visibleSeries]);
 
-  const byCategory = (cat) => visibleSeries.filter(s => s.category?.toLowerCase().includes(cat.toLowerCase()));
+  const forCategoryRows = useMemo(
+    () => visibleSeries.filter((s) => s.content_type !== 'movie'),
+    [visibleSeries]
+  );
+  const movieRows = useMemo(
+    () => visibleSeries.filter((s) => s.content_type === 'movie'),
+    [visibleSeries]
+  );
+
+  const byCategory = (cat) => forCategoryRows.filter(s => s.category?.toLowerCase().includes(cat.toLowerCase()));
 
   const categories = useMemo(() => {
     const cats = new Set();
-    visibleSeries.forEach(s => {
+    forCategoryRows.forEach(s => {
       if (s.category) {
         s.category.split(',').forEach(c => cats.add(c.trim()));
       }
     });
     return Array.from(cats);
-  }, [allSeries]);
+  }, [forCategoryRows]);
 
   const mostViewed = visibleSeries.filter(s => s.highlighted_home_section === 'mais_assistidos').length > 0
     ? visibleSeries.filter(s => s.highlighted_home_section === 'mais_assistidos')
@@ -147,6 +156,10 @@ export default function Home() {
       <div className="-mt-10 md:-mt-20 relative z-10">
         {mostViewed.length > 0 && (
           <SeriesCarousel title="Mais Assistidos" series={mostViewed} myListIds={myListIds} onToggleList={toggleList} episodes={episodes} hideComingSoon={true} />
+        )}
+
+        {movieRows.length > 0 && (
+          <SeriesCarousel title="Filmes" series={movieRows} myListIds={myListIds} onToggleList={toggleList} episodes={episodes} hideComingSoon={true} hideComingSoonIds={mostViewedIds} />
         )}
 
         <ContinueWatching history={history} episodes={episodes} allSeries={allSeries} profileName={activeProfile?.name} />
