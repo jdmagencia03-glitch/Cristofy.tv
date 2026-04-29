@@ -13,7 +13,6 @@ export default function SeriesCard({ series, isInList, onToggleList, episodes = 
   const hasNoEpisodes = seriesEpisodes.length === 0;
   const hasAtLeastOneLink = seriesEpisodes.some(e => !!e.video_url);
   const showComingSoon = !isPlaceholder && !hideComingSoon && (hasNoEpisodes || !hasAtLeastOneLink);
-  const showSugerido = isPlaceholder;
 
   const CardWrap = Link;
   const cardWrapProps = isPlaceholder
@@ -39,11 +38,6 @@ export default function SeriesCard({ series, isInList, onToggleList, episodes = 
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#00A8E1]/30 to-[#1A242F] p-3">
               <span className="text-sm font-bold text-center text-white/80">{series.title}</span>
-            </div>
-          )}
-          {showSugerido && (
-            <div className="absolute top-2 left-2 z-[1] text-[10px] uppercase tracking-wide px-1.5 py-0.5 rounded bg-black/75 text-[#00A8E1]">
-              Catálogo sugerido
             </div>
           )}
           {showComingSoon && (

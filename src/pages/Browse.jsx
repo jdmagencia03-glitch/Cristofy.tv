@@ -125,9 +125,6 @@ export default function Browse() {
               <motion.div key={s.id} layout initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                 <Link to={linkTo} className="group block">
                   <div className="aspect-[2/3] rounded-lg overflow-hidden bg-[#1A242F] relative">
-                    {isPlaceholder && (
-                      <span className="absolute top-2 left-2 z-[1] text-[10px] uppercase tracking-wide px-1.5 py-0.5 rounded bg-black/75 text-[#00A8E1]">Sugerido</span>
-                    )}
                     {!isPlaceholder && s.content_type === 'movie' && (
                       <span className="absolute top-2 left-2 z-[1] text-[10px] uppercase tracking-wide px-1.5 py-0.5 rounded bg-black/70 text-white">Filme</span>
                     )}

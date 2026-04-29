@@ -1,16 +1,56 @@
-import React, { useRef } from 'react';
-import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import useEmblaCarousel from 'embla-carousel-react';
 import SeriesCard from './SeriesCard';
 
 export default function SeriesCarousel({ title, series, myListIds, onToggleList, category, episodes = [], hideComingSoon = false, hideComingSoonIds = new Set() }) {
-  const scrollRef = useRef(null);
+  const [cardsPerPage, setCardsPerPage] = useState(2);
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: 'start' });
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
-  const scroll = (dir) => {
-    if (!scrollRef.current) return;
-    const amount = scrollRef.current.clientWidth * 0.8;
-    scrollRef.current.scrollBy({ left: dir === 'left' ? -amount : amount, behavior: 'smooth' });
-  };
+  useEffect(() => {
+    const updateCardsPerPage = () => {
+      const w = window.innerWidth;
+      if (w >= 1280) setCardsPerPage(5);
+      else if (w >= 1024) setCardsPerPage(4);
+      else if (w >= 768) setCardsPerPage(3);
+      else setCardsPerPage(2);
+    };
+
+    updateCardsPerPage();
+    window.addEventListener('resize', updateCardsPerPage);
+    return () => window.removeEventListener('resize', updateCardsPerPage);
+  }, []);
+
+  const pages = useMemo(() => {
+    const grouped = [];
+    for (let i = 0; i < series.length; i += cardsPerPage) {
+      grouped.push(series.slice(i, i + cardsPerPage));
+    }
+    return grouped;
+  }, [series, cardsPerPage]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    const onSelect = () => setSelectedIndex(emblaApi.selectedScrollSnap());
+    onSelect();
+    emblaApi.on('select', onSelect);
+    emblaApi.on('reInit', onSelect);
+    return () => {
+      emblaApi.off('select', onSelect);
+      emblaApi.off('reInit', onSelect);
+    };
+  }, [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi || pages.length <= 1) return;
+    const timer = setInterval(() => {
+      if (emblaApi.canScrollNext()) emblaApi.scrollNext();
+      else emblaApi.scrollTo(0);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [emblaApi, pages.length]);
 
   if (!series || series.length === 0) return null;
 
@@ -30,36 +70,43 @@ export default function SeriesCarousel({ title, series, myListIds, onToggleList,
       </div>
       
       <div className="relative">
-        <button
-          onClick={() => scroll('left')}
-          className="absolute left-0 top-0 bottom-0 z-10 w-10 md:w-14 flex items-center justify-center bg-gradient-to-r from-[#0F171E] to-transparent opacity-0 group-hover/carousel:opacity-100 transition-opacity"
-        >
-          <ChevronLeft className="w-6 h-6 md:w-8 md:h-8" />
-        </button>
+        <div className="overflow-hidden px-4 md:px-12" ref={emblaRef}>
+          <div className="flex pb-4">
+            {pages.map((page, idx) => (
+              <div key={`${title}-page-${idx}`} className="min-w-0 shrink-0 grow-0 basis-full">
+                <div className="flex gap-2 md:gap-3">
+                  {page.map((s) => (
+                    <SeriesCard
+                      key={s.id}
+                      series={s}
+                      isInList={myListIds?.includes(s.id)}
+                      onToggleList={onToggleList}
+                      episodes={episodes}
+                      hideComingSoon={hideComingSoon || hideComingSoonIds.has(s.id)}
+                    />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
 
-        <div
-          ref={scrollRef}
-          className="flex gap-2 md:gap-3 overflow-x-auto hide-scrollbar px-4 md:px-12 pb-4"
-        >
-          {series.map(s => (
-            <SeriesCard
-              key={s.id}
-              series={s}
-              isInList={myListIds?.includes(s.id)}
-              onToggleList={onToggleList}
-              episodes={episodes}
-              hideComingSoon={hideComingSoon || hideComingSoonIds.has(s.id)}
+      {pages.length > 1 && (
+        <div className="mt-1 flex items-center justify-center gap-2">
+          {pages.map((_, idx) => (
+            <button
+              key={`${title}-dot-${idx}`}
+              type="button"
+              onClick={() => emblaApi?.scrollTo(idx)}
+              aria-label={`Ir para página ${idx + 1} de ${pages.length}`}
+              className={`h-2.5 w-2.5 rounded-full transition-all ${
+                selectedIndex === idx ? 'bg-white scale-110' : 'bg-white/35 hover:bg-white/60'
+              }`}
             />
           ))}
         </div>
-
-        <button
-          onClick={() => scroll('right')}
-          className="absolute right-0 top-0 bottom-0 z-10 w-10 md:w-14 flex items-center justify-center bg-gradient-to-l from-[#0F171E] to-transparent opacity-0 group-hover/carousel:opacity-100 transition-opacity"
-        >
-          <ChevronRight className="w-6 h-6 md:w-8 md:h-8" />
-        </button>
-      </div>
+      )}
     </div>
   );
 }
