@@ -54,7 +54,7 @@ const PLANS = [
     features: [
       "Acesso completo ao catálogo",
       "Qualidade Full HD",
-      "1 perfil adicional",
+      "Múltiplos Perfis",
       "Sem anúncios",
     ],
   },
@@ -270,7 +270,7 @@ export default function Subscription() {
             </div>
 
             <p className="text-center text-xs text-gray-600 mt-8">
-              Pagamento 100% seguro via AbacatePay • PIX ou Cartão de Crédito • Cancele quando quiser
+              Pagamento 100% seguro via Asaas • PIX ou Cartão de Crédito • Cancele quando quiser
             </p>
           </>
         )}
