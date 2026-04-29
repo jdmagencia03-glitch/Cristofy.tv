@@ -172,7 +172,7 @@ export default function Player() {
   if (!episode) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-[#E50914] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-[#00A8E1] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -199,7 +199,7 @@ export default function Player() {
                 Próximo
               </button>
             )}
-            <button onClick={() => setShowSidebar(!showSidebar)} className="p-2 text-white hover:text-[#E50914] transition-colors">
+            <button onClick={() => setShowSidebar(!showSidebar)} className="p-2 text-white hover:text-[#00A8E1] transition-colors">
               <List className="w-5 h-5" />
             </button>
           </div>
@@ -269,7 +269,7 @@ export default function Player() {
             <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-40 backdrop-blur-sm">
               <div className="text-center">
                 <p className="text-gray-300 mb-4">Próximo episódio em</p>
-                <div className="text-6xl font-bold text-[#E50914] mb-6">{autoplayCountdown}</div>
+                <div className="text-6xl font-bold text-[#00A8E1] mb-6">{autoplayCountdown}</div>
                 <p className="text-white mb-2">T{nextEpisode.season || 1} E{nextEpisode.number}: {nextEpisode.title}</p>
                 <button
                   onClick={() => setAutoplayCountdown(null)}
@@ -286,7 +286,7 @@ export default function Player() {
 
       {/* Episode sidebar */}
       {showSidebar && (
-        <div className="fixed top-0 right-0 bottom-0 w-80 bg-[#1A1A1A] z-30 overflow-y-auto shadow-2xl border-l border-white/5">
+        <div className="fixed top-0 right-0 bottom-0 w-80 bg-[#1A242F] z-30 overflow-y-auto shadow-2xl border-l border-white/5">
           <div className="p-4 border-b border-white/5 flex items-center justify-between">
             <h3 className="font-bold text-white">Episódios</h3>
             <button onClick={() => setShowSidebar(false)} className="text-gray-400 hover:text-white">✕</button>
@@ -297,9 +297,9 @@ export default function Player() {
                 key={ep.id}
                 to={`/Player?episodeId=${ep.id}`}
                 onClick={() => setShowSidebar(false)}
-                className={`flex gap-3 p-3 hover:bg-white/5 transition-colors ${ep.id === episodeId ? 'bg-white/10 border-l-2 border-[#E50914]' : ''}`}
+                className={`flex gap-3 p-3 hover:bg-white/5 transition-colors ${ep.id === episodeId ? 'bg-white/10 border-l-2 border-[#00A8E1]' : ''}`}
               >
-                <div className="shrink-0 w-24 aspect-video rounded overflow-hidden bg-[#2A2A2A]">
+                <div className="shrink-0 w-24 aspect-video rounded overflow-hidden bg-[#252E39]">
                   {(ep.thumbnail_url || series?.cover_url) ? (
                     <img src={ep.thumbnail_url || series?.cover_url} alt="" className="w-full h-full object-cover" />
                   ) : (
@@ -329,7 +329,7 @@ export default function Player() {
         {nextEpisode && (
           <button
             onClick={goToNextEpisode}
-            className="inline-flex items-center gap-2 mt-6 bg-[#E50914] hover:bg-[#FF3D3D] text-white px-6 py-3 rounded-md font-semibold transition-colors"
+            className="inline-flex items-center gap-2 mt-6 bg-[#00A8E1] hover:bg-[#36CFFF] text-white px-6 py-3 rounded-md font-semibold transition-colors"
           >
             <SkipForward className="w-5 h-5" />
             Próximo: {nextEpisode.title}

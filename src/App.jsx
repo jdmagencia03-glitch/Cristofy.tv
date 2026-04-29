@@ -36,7 +36,7 @@ const AuthenticatedApp = () => {
 
   if (authError?.type === 'firebase_not_configured') {
     return (
-      <div className="fixed inset-0 flex items-center justify-center bg-[#0F0F0F] p-6">
+      <div className="fixed inset-0 flex items-center justify-center bg-[#0F171E] p-6">
         <div className="max-w-md text-center text-gray-300">
           <p className="text-lg font-semibold text-white mb-2">Firebase não configurado</p>
           <p className="text-sm">
@@ -50,12 +50,12 @@ const AuthenticatedApp = () => {
 
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
-      <div className="fixed inset-0 flex items-center justify-center bg-[#0F0F0F]">
+      <div className="fixed inset-0 flex items-center justify-center bg-[#0F171E]">
         <div className="text-center">
           <h1 className="text-3xl font-black mb-4">
             <BrandWordmark className="text-3xl" />
           </h1>
-          <div className="w-8 h-8 border-2 border-[#E50914] border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <div className="w-8 h-8 border-2 border-[#00A8E1] border-t-transparent rounded-full animate-spin mx-auto"></div>
         </div>
       </div>
     );

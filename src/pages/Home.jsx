@@ -169,7 +169,7 @@ export default function Home() {
   const mostViewedIds = new Set(mostViewed.map(s => s.id));
 
   return (
-    <div className="min-h-screen bg-[#0F0F0F]">
+    <div className="min-h-screen bg-[#0F171E]">
       <HeroBanner seriesList={bannerSeries} />
 
       <div className="-mt-10 md:-mt-20 relative z-10">

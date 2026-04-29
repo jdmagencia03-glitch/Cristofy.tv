@@ -96,13 +96,13 @@ export default function AdminMetrics() {
   }, [subscriptions, series, watchHistory]);
 
   return (
-    <div className="min-h-screen bg-[#0F0F0F] pt-20 px-6 pb-6">
+    <div className="min-h-screen bg-[#0F171E] pt-20 px-6 pb-6">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-3xl font-bold text-white mb-8">Dashboard de Métricas</h1>
 
         {/* KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-[#1A1A1A] rounded-lg p-6 border border-white/5">
+          <div className="bg-[#1A242F] rounded-lg p-6 border border-white/5">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-400 text-sm">Usuários Ativos</p>
@@ -112,7 +112,7 @@ export default function AdminMetrics() {
             </div>
           </div>
 
-          <div className="bg-[#1A1A1A] rounded-lg p-6 border border-white/5">
+          <div className="bg-[#1A242F] rounded-lg p-6 border border-white/5">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-400 text-sm">Total Assinaturas</p>
@@ -122,7 +122,7 @@ export default function AdminMetrics() {
             </div>
           </div>
 
-          <div className="bg-[#1A1A1A] rounded-lg p-6 border border-white/5">
+          <div className="bg-[#1A242F] rounded-lg p-6 border border-white/5">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-400 text-sm">Total Visualizações</p>
@@ -132,7 +132,7 @@ export default function AdminMetrics() {
             </div>
           </div>
 
-          <div className="bg-[#1A1A1A] rounded-lg p-6 border border-white/5">
+          <div className="bg-[#1A242F] rounded-lg p-6 border border-white/5">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-400 text-sm">Taxa Conclusão</p>
@@ -146,7 +146,7 @@ export default function AdminMetrics() {
         {/* Charts Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Timeline de Assinaturas */}
-          <div className="bg-[#1A1A1A] rounded-lg p-6 border border-white/5">
+          <div className="bg-[#1A242F] rounded-lg p-6 border border-white/5">
             <h2 className="text-lg font-bold text-white mb-4">Assinaturas ao Longo do Tempo</h2>
             <ResponsiveContainer width="100%" height={250}>
               <LineChart data={metrics.timelineChart}>
@@ -154,16 +154,16 @@ export default function AdminMetrics() {
                 <XAxis dataKey="date" stroke="#999" style={{ fontSize: '12px' }} />
                 <YAxis stroke="#999" style={{ fontSize: '12px' }} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#1A1A1A', border: '1px solid #333' }}
+                  contentStyle={{ backgroundColor: '#1A242F', border: '1px solid #333' }}
                   labelStyle={{ color: '#fff' }}
                 />
-                <Line type="monotone" dataKey="assinaturas" stroke="#E50914" strokeWidth={2} />
+                <Line type="monotone" dataKey="assinaturas" stroke="#00A8E1" strokeWidth={2} />
               </LineChart>
             </ResponsiveContainer>
           </div>
 
           {/* Distribuição de Planos */}
-          <div className="bg-[#1A1A1A] rounded-lg p-6 border border-white/5">
+          <div className="bg-[#1A242F] rounded-lg p-6 border border-white/5">
             <h2 className="text-lg font-bold text-white mb-4">Distribuição de Planos</h2>
             <ResponsiveContainer width="100%" height={250}>
               <PieChart>
@@ -182,7 +182,7 @@ export default function AdminMetrics() {
                   ))}
                 </Pie>
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#1A1A1A', border: '1px solid #333' }}
+                  contentStyle={{ backgroundColor: '#1A242F', border: '1px solid #333' }}
                   labelStyle={{ color: '#fff' }}
                 />
               </PieChart>
@@ -190,7 +190,7 @@ export default function AdminMetrics() {
           </div>
 
           {/* Séries Mais Assistidas */}
-          <div className="bg-[#1A1A1A] rounded-lg p-6 border border-white/5">
+          <div className="bg-[#1A242F] rounded-lg p-6 border border-white/5">
             <h2 className="text-lg font-bold text-white mb-4">Top 5 Séries</h2>
             <ResponsiveContainer width="100%" height={250}>
               <BarChart data={metrics.topSeries}>
@@ -198,16 +198,16 @@ export default function AdminMetrics() {
                 <XAxis dataKey="name" stroke="#999" style={{ fontSize: '12px' }} />
                 <YAxis stroke="#999" style={{ fontSize: '12px' }} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#1A1A1A', border: '1px solid #333' }}
+                  contentStyle={{ backgroundColor: '#1A242F', border: '1px solid #333' }}
                   labelStyle={{ color: '#fff' }}
                 />
-                <Bar dataKey="views" fill="#E50914" />
+                <Bar dataKey="views" fill="#00A8E1" />
               </BarChart>
             </ResponsiveContainer>
           </div>
 
           {/* Status das Assinaturas */}
-          <div className="bg-[#1A1A1A] rounded-lg p-6 border border-white/5">
+          <div className="bg-[#1A242F] rounded-lg p-6 border border-white/5">
             <h2 className="text-lg font-bold text-white mb-4">Status das Assinaturas</h2>
             <div className="space-y-3">
               {Object.entries(metrics.statusCount).map(([status, count]) => {

@@ -16,7 +16,7 @@ export default function AdminUsers() {
   const base44Error = result && !result.ok ? result.error : null;
 
   return (
-    <div className="min-h-screen bg-[#0F0F0F] pt-20 md:pt-24 px-4 md:px-12">
+    <div className="min-h-screen bg-[#0F171E] pt-20 md:pt-24 px-4 md:px-12">
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center gap-4 mb-6">
           <Link to="/Admin" className="text-gray-400 hover:text-white"><ArrowLeft className="w-5 h-5" /></Link>
@@ -46,8 +46,8 @@ export default function AdminUsers() {
             {users.map(u => {
               const createdLabel = safeFormatDatePtBr(u.created_date);
               return (
-              <div key={u.id} className="flex items-center gap-4 p-4 bg-[#1A1A1A] rounded-lg">
-                <div className="w-10 h-10 rounded-full bg-[#E50914] flex items-center justify-center shrink-0">
+              <div key={u.id} className="flex items-center gap-4 p-4 bg-[#1A242F] rounded-lg">
+                <div className="w-10 h-10 rounded-full bg-[#00A8E1] flex items-center justify-center shrink-0">
                   <span className="text-sm font-bold">{u.full_name?.[0] || u.email?.[0] || '?'}</span>
                 </div>
                 <div className="flex-1 min-w-0">

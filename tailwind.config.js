@@ -50,6 +50,15 @@ module.exports = {
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
   			},
+  			/** Paleta inspirada em Prime Video — use bg-prime-* / text-prime-accent em código novo */
+  			prime: {
+  				bg: '#0F171E',
+  				surface: '#1A242F',
+  				elevated: '#252E39',
+  				accent: '#00A8E1',
+  				accentHover: '#36CFFF',
+  				accentDark: '#0088b8',
+  			},
   			sidebar: {
   				DEFAULT: 'hsl(var(--sidebar-background))',
   				foreground: 'hsl(var(--sidebar-foreground))',

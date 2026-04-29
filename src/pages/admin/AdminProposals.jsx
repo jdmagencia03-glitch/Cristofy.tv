@@ -31,7 +31,7 @@ export default function AdminProposals() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0F0F0F] pt-20 md:pt-24 px-4 md:px-12">
+    <div className="min-h-screen bg-[#0F171E] pt-20 md:pt-24 px-4 md:px-12">
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center gap-4 mb-6">
           <Link to="/Admin" className="text-gray-400 hover:text-white"><ArrowLeft className="w-5 h-5" /></Link>
@@ -55,7 +55,7 @@ export default function AdminProposals() {
             {proposals.map(p => {
               const dateLabel = safeFormatDatePtBr(p.created_date);
               return (
-              <div key={p.id} className="p-4 bg-[#1A1A1A] rounded-lg">
+              <div key={p.id} className="p-4 bg-[#1A242F] rounded-lg">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">

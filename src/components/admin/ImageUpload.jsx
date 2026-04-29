@@ -69,10 +69,10 @@ export default function ImageUpload({
 					<p className="text-xs text-gray-400 mb-1">Enviar do computador</p>
 					<div
 						onClick={() => !uploading && inputRef.current?.click()}
-						className="relative w-full h-28 rounded-lg overflow-hidden bg-[#2A2A2A] border-2 border-dashed border-white/15 hover:border-[#E50914]/50 cursor-pointer flex items-center justify-center transition-colors"
+						className="relative w-full h-28 rounded-lg overflow-hidden bg-[#252E39] border-2 border-dashed border-white/15 hover:border-[#00A8E1]/50 cursor-pointer flex items-center justify-center transition-colors"
 					>
 						{uploading ? (
-							<Loader2 className="w-8 h-8 animate-spin text-[#E50914]" />
+							<Loader2 className="w-8 h-8 animate-spin text-[#00A8E1]" />
 						) : (
 							<div className="flex flex-col items-center gap-1 text-gray-400 px-2 text-center">
 								<Upload className="w-7 h-7" />
@@ -99,7 +99,7 @@ export default function ImageUpload({
 				</div>
 			)}
 
-			<div className="flex items-start gap-2 rounded-lg border border-white/10 bg-[#222]/80 p-2">
+			<div className="flex items-start gap-2 rounded-lg border border-white/10 bg-[#252E39]/80 p-2">
 				<Link2 className="w-4 h-4 text-[#FFC107] shrink-0 mt-2.5" />
 				<div className="flex-1 min-w-0 space-y-1">
 					<p className="text-xs text-gray-400">Cole uma URL de imagem</p>
@@ -110,7 +110,7 @@ export default function ImageUpload({
 						placeholder={placeholder}
 						value={value || ''}
 						onChange={(e) => onChange(e.target.value.trim())}
-						className="bg-[#2A2A2A] border-white/10 text-white text-sm"
+						className="bg-[#252E39] border-white/10 text-white text-sm"
 					/>
 					<p className="text-[10px] text-gray-500 leading-snug">
 						Se preferir, cole uma URL externa. Para arquivo do computador, use o envio acima via Firebase Storage.
@@ -119,7 +119,7 @@ export default function ImageUpload({
 			</div>
 
 			<div
-				className={`relative w-full ${heightClass} rounded-lg overflow-hidden bg-[#2A2A2A] border border-white/10 flex items-center justify-center`}
+				className={`relative w-full ${heightClass} rounded-lg overflow-hidden bg-[#252E39] border border-white/10 flex items-center justify-center`}
 			>
 				{looksLikeUrl(value) ? (
 					<>

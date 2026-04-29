@@ -20,7 +20,7 @@ export default function SeriesCard({ series, isInList, onToggleList, episodes = 
       transition={{ duration: 0.2 }}
     >
       <Link to={`/SeriesDetail?id=${series.id}`}>
-        <div className="aspect-[2/3] rounded-lg overflow-hidden bg-[#1A1A1A] shadow-lg relative">
+        <div className="aspect-[2/3] rounded-lg overflow-hidden bg-[#1A242F] shadow-lg relative">
           {series.cover_url ? (
             <img
               src={series.cover_url}
@@ -28,7 +28,7 @@ export default function SeriesCard({ series, isInList, onToggleList, episodes = 
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#E50914]/30 to-[#1A1A1A] p-3">
+            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#00A8E1]/30 to-[#1A242F] p-3">
               <span className="text-sm font-bold text-center text-white/80">{series.title}</span>
             </div>
           )}
@@ -51,7 +51,7 @@ export default function SeriesCard({ series, isInList, onToggleList, episodes = 
           animate={{ opacity: 1, y: 0 }}
           className="absolute -bottom-2 left-0 right-0 px-2 pb-2"
         >
-          <div className="bg-[#1A1A1A] rounded-b-lg p-3 shadow-2xl border-t border-[#E50914]/30">
+          <div className="bg-[#1A242F] rounded-b-lg p-3 shadow-2xl border-t border-[#00A8E1]/30">
             <p className="text-xs font-semibold text-white truncate mb-2">{series.title}</p>
             <div className="flex items-center gap-2">
               <Link

@@ -84,10 +84,10 @@ export default function HeroBanner({ seriesList }) {
               />
             </>
           ) : (
-            <div className="absolute inset-0 bg-gradient-to-br from-[#1a0000] via-[#0F0F0F] to-[#1a1a00]" />
+            <div className="absolute inset-0 bg-gradient-to-br from-[#0a1628] via-[#0F171E] to-[#0f2438]" />
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0F0F0F] via-[#0F0F0F]/40 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0F0F0F]/80 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0F171E] via-[#0F171E]/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0F171E]/80 via-transparent to-transparent" />
         </motion.div>
       </AnimatePresence>
 

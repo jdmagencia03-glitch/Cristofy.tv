@@ -81,7 +81,7 @@ export default function AdminEpisodeCreator() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0F0F0F] text-white p-6">
+    <div className="min-h-screen bg-[#0F171E] text-white p-6">
       <div className="max-w-2xl mx-auto">
         <h1 className="text-2xl font-bold mb-2">Criar Episódios por Imagem</h1>
         <p className="text-gray-400 mb-8 text-sm">Envie um print com os nomes dos episódios e o sistema criará automaticamente no banco de dados.</p>
@@ -91,10 +91,10 @@ export default function AdminEpisodeCreator() {
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">Selecione a Série</label>
             <Select value={selectedSeries} onValueChange={setSelectedSeries}>
-              <SelectTrigger className="bg-[#1A1A1A] border-white/10 text-white">
+              <SelectTrigger className="bg-[#1A242F] border-white/10 text-white">
                 <SelectValue placeholder="Escolha uma série..." />
               </SelectTrigger>
-              <SelectContent className="bg-[#1A1A1A] border-white/10">
+              <SelectContent className="bg-[#1A242F] border-white/10">
                 {seriesList.map(s => (
                   <SelectItem key={s.id} value={s.id} className="text-white">{s.title}</SelectItem>
                 ))}
@@ -105,7 +105,7 @@ export default function AdminEpisodeCreator() {
           {/* Image upload */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">Print com os Episódios</label>
-            <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-white/20 rounded-lg cursor-pointer hover:border-[#E50914]/50 transition-colors bg-[#1A1A1A]">
+            <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-white/20 rounded-lg cursor-pointer hover:border-[#00A8E1]/50 transition-colors bg-[#1A242F]">
               {preview ? (
                 <img src={preview} alt="preview" className="h-full w-full object-contain rounded-lg p-2" />
               ) : (
@@ -122,7 +122,7 @@ export default function AdminEpisodeCreator() {
           <Button
             onClick={handleSubmit}
             disabled={!imageFile || !selectedSeries || loading}
-            className="w-full bg-[#E50914] hover:bg-[#FF3D3D] text-white font-semibold"
+            className="w-full bg-[#00A8E1] hover:bg-[#36CFFF] text-white font-semibold"
           >
             {loading ? (
               <><Loader2 className="w-4 h-4 animate-spin mr-2" /> Processando imagem...</>

@@ -59,7 +59,7 @@ export default function Login() {
 	};
 
 	return (
-		<div className="min-h-screen bg-[#0F0F0F] flex items-center justify-center p-4">
+		<div className="min-h-screen bg-[#0F171E] flex items-center justify-center p-4">
 			<div className="w-full max-w-md">
 				<div className="text-center mb-8">
 					<h1 className="text-3xl font-black mb-2">
@@ -70,14 +70,14 @@ export default function Login() {
 					</p>
 				</div>
 
-				<form onSubmit={submit} className="bg-[#1A1A1A] rounded-xl p-6 border border-white/5 space-y-4">
+				<form onSubmit={submit} className="bg-[#1A242F] rounded-xl p-6 border border-white/5 space-y-4">
 					<Input
 						type="email"
 						autoComplete="email"
 						placeholder="E-mail"
 						value={email}
 						onChange={(e) => setEmail(e.target.value)}
-						className="bg-[#2A2A2A] border-none text-white"
+						className="bg-[#252E39] border-none text-white"
 					/>
 					<Input
 						type="password"
@@ -85,7 +85,7 @@ export default function Login() {
 						placeholder="Senha"
 						value={password}
 						onChange={(e) => setPassword(e.target.value)}
-						className="bg-[#2A2A2A] border-none text-white"
+						className="bg-[#252E39] border-none text-white"
 					/>
 
 					{error && (
@@ -95,7 +95,7 @@ export default function Login() {
 					<Button
 						type="submit"
 						disabled={loading}
-						className="w-full bg-[#E50914] hover:bg-[#FF3D3D] py-3"
+						className="w-full bg-[#00A8E1] hover:bg-[#36CFFF] py-3"
 					>
 						{loading ? (
 							<Loader2 className="w-5 h-5 animate-spin mx-auto" />

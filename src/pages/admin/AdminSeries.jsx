@@ -116,20 +116,20 @@ export default function AdminSeries() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0F0F0F] pt-20 md:pt-24 px-4 md:px-12">
+    <div className="min-h-screen bg-[#0F171E] pt-20 md:pt-24 px-4 md:px-12">
       <div className="max-w-6xl mx-auto">
         <div className="flex items-center gap-4 mb-6">
           <Link to="/Admin" className="text-gray-400 hover:text-white"><ArrowLeft className="w-5 h-5" /></Link>
           <h1 className="text-2xl font-bold flex-1">Séries e filmes</h1>
-          <Button onClick={openCreate} className="bg-[#E50914] hover:bg-[#FF3D3D]">
+          <Button onClick={openCreate} className="bg-[#00A8E1] hover:bg-[#36CFFF]">
             <Plus className="w-4 h-4 mr-2" /> Novo título
           </Button>
         </div>
 
         <div className="space-y-3">
           {series.map(s => (
-            <div key={s.id} className="flex items-center gap-4 p-4 bg-[#1A1A1A] rounded-lg hover:bg-[#222] transition-colors">
-              <div className="shrink-0 w-16 h-24 rounded overflow-hidden bg-[#2A2A2A]">
+            <div key={s.id} className="flex items-center gap-4 p-4 bg-[#1A242F] rounded-lg hover:bg-[#252E39] transition-colors">
+              <div className="shrink-0 w-16 h-24 rounded overflow-hidden bg-[#252E39]">
                 {s.cover_url ? (
                   <img src={s.cover_url} alt="" className="w-full h-full object-cover" />
                 ) : (
@@ -148,7 +148,7 @@ export default function AdminSeries() {
                 <p className="text-xs text-gray-400 mt-1">{s.category} • {s.year} • {s.age_rating}</p>
               </div>
               <div className="flex items-center gap-2 shrink-0">
-                <Link to={`/AdminEpisodes?seriesId=${s.id}`} className="text-xs text-[#E50914] hover:text-[#FF3D3D] px-3 py-1 border border-[#E50914] rounded">
+                <Link to={`/AdminEpisodes?seriesId=${s.id}`} className="text-xs text-[#00A8E1] hover:text-[#36CFFF] px-3 py-1 border border-[#00A8E1] rounded">
                   {s.content_type === 'movie' ? 'Vídeo' : 'Episódios'}
                 </Link>
                 <button onClick={() => openEdit(s)} className="p-2 text-gray-400 hover:text-white"><Pencil className="w-4 h-4" /></button>
@@ -159,13 +159,13 @@ export default function AdminSeries() {
           {series.length === 0 && !isLoading && (
             <div className="text-center py-12 text-gray-500">
               <p>Nenhuma série ou filme cadastrado.</p>
-              <Button onClick={openCreate} className="mt-4 bg-[#E50914] hover:bg-[#FF3D3D]">Criar primeiro título</Button>
+              <Button onClick={openCreate} className="mt-4 bg-[#00A8E1] hover:bg-[#36CFFF]">Criar primeiro título</Button>
             </div>
           )}
         </div>
 
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogContent className="bg-[#1A1A1A] border-white/10 text-white max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogContent className="bg-[#1A242F] border-white/10 text-white max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{editing ? (form.content_type === 'movie' ? 'Editar filme' : 'Editar série') : 'Novo título'}</DialogTitle>
             </DialogHeader>
@@ -173,20 +173,20 @@ export default function AdminSeries() {
               <div>
                 <p className="text-xs text-gray-400 mb-1">Tipo</p>
                 <Select value={form.content_type} onValueChange={(v) => setForm({ ...form, content_type: v })}>
-                  <SelectTrigger className="bg-[#2A2A2A] border-none"><SelectValue /></SelectTrigger>
+                  <SelectTrigger className="bg-[#252E39] border-none"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="series">Série</SelectItem>
                     <SelectItem value="movie">Filme</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-              <Input placeholder="Título" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} className="bg-[#2A2A2A] border-none" />
-              <Textarea placeholder="Descrição" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} className="bg-[#2A2A2A] border-none h-24" />
-              <Input placeholder="Categorias (ex: Anime, Ação)" value={form.category} onChange={e => setForm({ ...form, category: e.target.value })} className="bg-[#2A2A2A] border-none" />
+              <Input placeholder="Título" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} className="bg-[#252E39] border-none" />
+              <Textarea placeholder="Descrição" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} className="bg-[#252E39] border-none h-24" />
+              <Input placeholder="Categorias (ex: Anime, Ação)" value={form.category} onChange={e => setForm({ ...form, category: e.target.value })} className="bg-[#252E39] border-none" />
               <div className="grid grid-cols-2 gap-3">
-                <Input placeholder="Ano" type="number" value={form.year} onChange={e => setForm({ ...form, year: e.target.value })} className="bg-[#2A2A2A] border-none" />
+                <Input placeholder="Ano" type="number" value={form.year} onChange={e => setForm({ ...form, year: e.target.value })} className="bg-[#252E39] border-none" />
                 <Select value={form.age_rating} onValueChange={v => setForm({ ...form, age_rating: v })}>
-                  <SelectTrigger className="bg-[#2A2A2A] border-none"><SelectValue /></SelectTrigger>
+                  <SelectTrigger className="bg-[#252E39] border-none"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     {['Livre', '10+', '12+', '14+', '16+', '18+'].map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}
                   </SelectContent>
@@ -232,7 +232,7 @@ export default function AdminSeries() {
                   setForm({ ...form, highlighted_home_section: v === HIGHLIGHT_NONE ? null : v })
                 }
               >
-                <SelectTrigger className="bg-[#2A2A2A] border-none"><SelectValue placeholder="Nenhuma seção especial" /></SelectTrigger>
+                <SelectTrigger className="bg-[#252E39] border-none"><SelectValue placeholder="Nenhuma seção especial" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value={HIGHLIGHT_NONE}>Nenhuma seção especial</SelectItem>
                   <SelectItem value="mais_assistidos">Mais Assistidos</SelectItem>
@@ -243,7 +243,7 @@ export default function AdminSeries() {
                 type="button"
                 onClick={handleSubmit}
                 disabled={createMut.isPending || updateMut.isPending}
-                className="w-full bg-[#E50914] hover:bg-[#FF3D3D]"
+                className="w-full bg-[#00A8E1] hover:bg-[#36CFFF]"
               >
                 {editing ? (updateMut.isPending ? 'Salvando…' : 'Salvar') : createMut.isPending ? 'Criando…' : 'Criar'}
               </Button>

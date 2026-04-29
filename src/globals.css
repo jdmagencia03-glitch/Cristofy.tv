@@ -2,7 +2,7 @@
 
 body {
   font-family: 'Inter', sans-serif;
-  background-color: #0F0F0F;
+  background-color: #0F171E;
   color: #FFFFFF;
 }
 
@@ -36,14 +36,14 @@ html {
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0F0F0F;
+  background: #0F171E;
 }
 ::-webkit-scrollbar-thumb {
-  background: #333;
+  background: #252E39;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: #364556;
 }
 
 /* Hide scrollbar for carousels */

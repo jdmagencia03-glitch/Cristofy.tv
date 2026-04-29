@@ -70,7 +70,7 @@ export default function AdminCodes() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0F0F0F] pt-20 md:pt-24 px-4 md:px-12">
+    <div className="min-h-screen bg-[#0F171E] pt-20 md:pt-24 px-4 md:px-12">
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center gap-4 mb-6">
           <Link to="/Admin" className="text-gray-400 hover:text-white"><ArrowLeft className="w-5 h-5" /></Link>
@@ -87,8 +87,8 @@ export default function AdminCodes() {
           </div>
         )}
 
-        <div className="flex flex-wrap gap-3 mb-8 p-4 bg-[#1A1A1A] rounded-xl">
-          <Button onClick={handleGenerate} disabled={createMut.isPending} className="bg-[#E50914] hover:bg-[#FF3D3D]">
+        <div className="flex flex-wrap gap-3 mb-8 p-4 bg-[#1A242F] rounded-xl">
+          <Button onClick={handleGenerate} disabled={createMut.isPending} className="bg-[#00A8E1] hover:bg-[#36CFFF]">
             <Plus className="w-4 h-4 mr-2" /> Gerar Código
           </Button>
           <Button onClick={bulkGenerate} variant="outline" className="border-gray-600 text-gray-300 hover:text-white">
@@ -99,9 +99,9 @@ export default function AdminCodes() {
               placeholder="Código personalizado"
               value={customCode}
               onChange={e => setCustomCode(e.target.value)}
-              className="bg-[#2A2A2A] border-none"
+              className="bg-[#252E39] border-none"
             />
-            <Button onClick={handleCustom} disabled={!customCode.trim() || createMut.isPending} className="bg-[#E50914] hover:bg-[#FF3D3D]">
+            <Button onClick={handleCustom} disabled={!customCode.trim() || createMut.isPending} className="bg-[#00A8E1] hover:bg-[#36CFFF]">
               Criar
             </Button>
           </div>
@@ -112,7 +112,7 @@ export default function AdminCodes() {
         {!isPending && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             {codes.map(c => (
-              <div key={c.id} className={`flex items-center gap-3 p-3 rounded-lg ${c.used_by ? 'bg-[#1A1A1A]/50' : 'bg-[#1A1A1A]'}`}>
+              <div key={c.id} className={`flex items-center gap-3 p-3 rounded-lg ${c.used_by ? 'bg-[#1A242F]/50' : 'bg-[#1A242F]'}`}>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <code className="text-sm font-mono font-bold">{c.code}</code>

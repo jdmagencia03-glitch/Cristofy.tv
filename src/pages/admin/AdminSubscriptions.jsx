@@ -54,7 +54,7 @@ function AddSubscriptionModal({ email: prefillEmail, onClose, onSuccess }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <div className="bg-[#1A1A1A] rounded-2xl border border-white/10 w-full max-w-md shadow-2xl">
+      <div className="bg-[#1A242F] rounded-2xl border border-white/10 w-full max-w-md shadow-2xl">
         <div className="flex items-center justify-between p-5 border-b border-white/5">
           <h2 className="text-white font-bold text-lg">Adicionar Assinatura Manual</h2>
           <button onClick={onClose} className="text-gray-400 hover:text-white"><X className="w-5 h-5" /></button>
@@ -66,7 +66,7 @@ function AddSubscriptionModal({ email: prefillEmail, onClose, onSuccess }) {
               placeholder="usuario@email.com"
               value={email}
               onChange={e => setEmail(e.target.value)}
-              className="bg-[#2A2A2A] border-white/10 text-white placeholder:text-gray-500"
+              className="bg-[#252E39] border-white/10 text-white placeholder:text-gray-500"
             />
           </div>
           <div>
@@ -76,7 +76,7 @@ function AddSubscriptionModal({ email: prefillEmail, onClose, onSuccess }) {
                 <button
                   key={p.id}
                   onClick={() => setPlan(p.id)}
-                  className={`py-2.5 rounded-lg border text-sm font-semibold transition-all ${plan === p.id ? 'bg-[#E50914] border-[#E50914] text-white' : 'border-white/10 text-gray-300 hover:border-white/30'}`}
+                  className={`py-2.5 rounded-lg border text-sm font-semibold transition-all ${plan === p.id ? 'bg-[#00A8E1] border-[#00A8E1] text-white' : 'border-white/10 text-gray-300 hover:border-white/30'}`}
                 >
                   {p.label}
                 </button>
@@ -89,7 +89,7 @@ function AddSubscriptionModal({ email: prefillEmail, onClose, onSuccess }) {
           {error && <p className="text-red-400 text-sm">{error}</p>}
           <div className="flex gap-3 pt-2">
             <Button variant="outline" onClick={onClose} className="flex-1 border-white/10 text-gray-300">Cancelar</Button>
-            <Button onClick={handleSubmit} disabled={loading} className="flex-1 bg-[#E50914] hover:bg-[#FF3D3D]">
+            <Button onClick={handleSubmit} disabled={loading} className="flex-1 bg-[#00A8E1] hover:bg-[#36CFFF]">
               {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : "Ativar Acesso"}
             </Button>
           </div>
@@ -116,7 +116,7 @@ function EditExpiryModal({ subscription, onClose, onSuccess }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <div className="bg-[#1A1A1A] rounded-2xl border border-white/10 w-full max-w-sm shadow-2xl">
+      <div className="bg-[#1A242F] rounded-2xl border border-white/10 w-full max-w-sm shadow-2xl">
         <div className="flex items-center justify-between p-5 border-b border-white/5">
           <h2 className="text-white font-bold text-lg">Editar Expiração</h2>
           <button onClick={onClose} className="text-gray-400 hover:text-white"><X className="w-5 h-5" /></button>
@@ -129,12 +129,12 @@ function EditExpiryModal({ subscription, onClose, onSuccess }) {
               type="date"
               value={date}
               onChange={e => setDate(e.target.value)}
-              className="w-full bg-[#2A2A2A] border border-white/10 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#E50914]"
+              className="w-full bg-[#252E39] border border-white/10 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#00A8E1]"
             />
           </div>
           <div className="flex gap-3 pt-2">
             <Button variant="outline" onClick={onClose} className="flex-1 border-white/10 text-gray-300">Cancelar</Button>
-            <Button onClick={handleSave} disabled={loading} className="flex-1 bg-[#E50914] hover:bg-[#FF3D3D]">
+            <Button onClick={handleSave} disabled={loading} className="flex-1 bg-[#00A8E1] hover:bg-[#36CFFF]">
               {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : "Salvar"}
             </Button>
           </div>
@@ -225,7 +225,7 @@ export default function AdminSubscriptions({ embedded = false }) {
 
   return (
     <>
-    <div className={embedded ? '' : 'min-h-screen bg-[#0F0F0F] p-6'}>
+    <div className={embedded ? '' : 'min-h-screen bg-[#0F171E] p-6'}>
       <div className="max-w-6xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold text-white">Usuários & Assinaturas</h1>
@@ -234,7 +234,7 @@ export default function AdminSubscriptions({ embedded = false }) {
               {grantingTrial ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Gift className="w-4 h-4" />}
               Trial para todos
             </Button>
-            <Button onClick={() => setAddForEmail('')} className="bg-[#E50914] hover:bg-[#FF3D3D] gap-2">
+            <Button onClick={() => setAddForEmail('')} className="bg-[#00A8E1] hover:bg-[#36CFFF] gap-2">
               <Plus className="w-4 h-4" /> Adicionar Assinatura
             </Button>
           </div>
@@ -242,19 +242,19 @@ export default function AdminSubscriptions({ embedded = false }) {
 
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-[#1A1A1A] rounded-xl p-4 border border-white/5">
+          <div className="bg-[#1A242F] rounded-xl p-4 border border-white/5">
             <p className="text-gray-400 text-sm">Total Usuários</p>
             <p className="text-2xl font-bold text-white">{stats.total}</p>
           </div>
-          <div className="bg-[#1A1A1A] rounded-xl p-4 border border-white/5">
+          <div className="bg-[#1A242F] rounded-xl p-4 border border-white/5">
             <p className="text-gray-400 text-sm">Com Assinatura Ativa</p>
             <p className="text-2xl font-bold text-green-400">{stats.active}</p>
           </div>
-          <div className="bg-[#1A1A1A] rounded-xl p-4 border border-white/5">
+          <div className="bg-[#1A242F] rounded-xl p-4 border border-white/5">
             <p className="text-gray-400 text-sm">Sem Assinatura Ativa</p>
             <p className="text-2xl font-bold text-red-400">{stats.noSub}</p>
           </div>
-          <div className="bg-[#1A1A1A] rounded-xl p-4 border border-white/5">
+          <div className="bg-[#1A242F] rounded-xl p-4 border border-white/5">
             <p className="text-gray-400 text-sm">Pendentes</p>
             <p className="text-2xl font-bold text-yellow-400">{stats.pending}</p>
           </div>
@@ -268,10 +268,10 @@ export default function AdminSubscriptions({ embedded = false }) {
               placeholder="Buscar por nome, email ou plano..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="pl-9 bg-[#1A1A1A] border-white/10 text-white placeholder:text-gray-500"
+              className="pl-9 bg-[#1A242F] border-white/10 text-white placeholder:text-gray-500"
             />
           </div>
-          <div className="flex gap-1 bg-[#1A1A1A] p-1 rounded-lg border border-white/5">
+          <div className="flex gap-1 bg-[#1A242F] p-1 rounded-lg border border-white/5">
             {[
               { id: 'all', label: 'Todos' },
               { id: 'active', label: 'Ativos' },
@@ -280,7 +280,7 @@ export default function AdminSubscriptions({ embedded = false }) {
               <button
                 key={f.id}
                 onClick={() => setFilter(f.id)}
-                className={`px-3 py-1.5 rounded text-xs font-semibold transition-all ${filter === f.id ? 'bg-[#E50914] text-white' : 'text-gray-400 hover:text-white'}`}
+                className={`px-3 py-1.5 rounded text-xs font-semibold transition-all ${filter === f.id ? 'bg-[#00A8E1] text-white' : 'text-gray-400 hover:text-white'}`}
               >
                 {f.label}
               </button>
@@ -291,10 +291,10 @@ export default function AdminSubscriptions({ embedded = false }) {
         {/* Table */}
         {isLoading ? (
           <div className="flex justify-center py-20">
-            <RefreshCw className="w-6 h-6 animate-spin text-[#E50914]" />
+            <RefreshCw className="w-6 h-6 animate-spin text-[#00A8E1]" />
           </div>
         ) : (
-          <div className="bg-[#1A1A1A] rounded-xl border border-white/5 overflow-hidden">
+          <div className="bg-[#1A242F] rounded-xl border border-white/5 overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
@@ -348,7 +348,7 @@ export default function AdminSubscriptions({ embedded = false }) {
                               <Button
                                 size="sm"
                                 onClick={() => setAddForEmail(user.email)}
-                                className="bg-[#E50914] hover:bg-[#FF3D3D] h-7 text-xs gap-1"
+                                className="bg-[#00A8E1] hover:bg-[#36CFFF] h-7 text-xs gap-1"
                               >
                                 <Plus className="w-3 h-3" /> Ativar
                               </Button>

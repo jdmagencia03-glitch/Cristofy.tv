@@ -51,7 +51,7 @@ export default function CheckoutModal({ plan, onClose, onSuccess }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <div className="bg-[#1A1A1A] rounded-2xl border border-white/10 w-full max-w-md shadow-2xl">
+      <div className="bg-[#1A242F] rounded-2xl border border-white/10 w-full max-w-md shadow-2xl">
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-white/5">
           <div>
@@ -101,26 +101,26 @@ export default function CheckoutModal({ plan, onClose, onSuccess }) {
                 placeholder="Nome completo *"
                 value={form.name}
                 onChange={e => setForm({ ...form, name: e.target.value })}
-                className="bg-[#2A2A2A] border-white/10 text-white placeholder:text-gray-500"
+                className="bg-[#252E39] border-white/10 text-white placeholder:text-gray-500"
               />
               <Input
                 placeholder="CPF (somente números) *"
                 value={form.cpf}
                 onChange={e => setForm({ ...form, cpf: e.target.value.replace(/\D/g, "").slice(0, 11) })}
-                className="bg-[#2A2A2A] border-white/10 text-white placeholder:text-gray-500"
+                className="bg-[#252E39] border-white/10 text-white placeholder:text-gray-500"
               />
               <Input
                 placeholder="Celular (opcional)"
                 value={form.phone}
                 onChange={e => setForm({ ...form, phone: e.target.value })}
-                className="bg-[#2A2A2A] border-white/10 text-white placeholder:text-gray-500"
+                className="bg-[#252E39] border-white/10 text-white placeholder:text-gray-500"
               />
               {error && <p className="text-red-400 text-sm">{error}</p>}
               <div className="flex gap-3 pt-2">
                 <Button variant="outline" onClick={() => setStep("method")} className="flex-1 border-white/10 text-gray-300">
                   Voltar
                 </Button>
-                <Button onClick={handleSubmit} className="flex-1 bg-[#E50914] hover:bg-[#FF3D3D]">
+                <Button onClick={handleSubmit} className="flex-1 bg-[#00A8E1] hover:bg-[#36CFFF]">
                   Continuar
                 </Button>
               </div>
@@ -130,7 +130,7 @@ export default function CheckoutModal({ plan, onClose, onSuccess }) {
           {/* Step: Processando */}
           {step === "processing" && (
             <div className="flex flex-col items-center py-10 gap-4">
-              <Loader2 className="w-10 h-10 animate-spin text-[#E50914]" />
+              <Loader2 className="w-10 h-10 animate-spin text-[#00A8E1]" />
               <p className="text-gray-300">Gerando sua cobrança...</p>
             </div>
           )}
@@ -151,7 +151,7 @@ export default function CheckoutModal({ plan, onClose, onSuccess }) {
                 rel="noopener noreferrer"
                 className="w-full"
               >
-                <Button className="w-full bg-[#E50914] hover:bg-[#FF3D3D] gap-2">
+                <Button className="w-full bg-[#00A8E1] hover:bg-[#36CFFF] gap-2">
                   <ExternalLink className="w-4 h-4" />
                   Pagar Agora
                 </Button>

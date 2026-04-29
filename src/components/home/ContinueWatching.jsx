@@ -31,7 +31,7 @@ export default function ContinueWatching({ history, episodes, allSeries, profile
             to={`/Player?episodeId=${item.episode.id}`}
             className="shrink-0 w-[240px] md:w-[280px] group relative"
           >
-            <div className="relative aspect-video rounded-sm overflow-hidden bg-[#1A1A1A]">
+            <div className="relative aspect-video rounded-sm overflow-hidden bg-[#1A242F]">
               {item.episode.thumbnail_url || item.series.cover_url ? (
                 <img
                   src={item.episode.thumbnail_url || item.series.cover_url}
@@ -39,7 +39,7 @@ export default function ContinueWatching({ history, episodes, allSeries, profile
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
               ) : (
-                <div className="w-full h-full bg-gradient-to-br from-[#E50914]/20 to-[#1A1A1A] flex items-center justify-center">
+                <div className="w-full h-full bg-gradient-to-br from-[#00A8E1]/20 to-[#1A242F] flex items-center justify-center">
                   <Play className="w-10 h-10 text-white/40" />
                 </div>
               )}
@@ -51,7 +51,7 @@ export default function ContinueWatching({ history, episodes, allSeries, profile
               </div>
               {/* Progress bar - Netflix style red thick bar at bottom */}
               <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-gray-600/80">
-                <div className="h-full bg-[#E50914]" style={{ width: `${item.progress}%` }} />
+                <div className="h-full bg-[#00A8E1]" style={{ width: `${item.progress}%` }} />
               </div>
             </div>
             {/* Series title below with episode info */}

@@ -127,7 +127,7 @@ export default function AdminBanner() {
     !b.series_id && (b.custom_banner_url || b.custom_banner_mobile_url);
 
   return (
-    <div className="min-h-screen bg-[#0F0F0F] pt-20 md:pt-24 px-4 md:px-12">
+    <div className="min-h-screen bg-[#0F171E] pt-20 md:pt-24 px-4 md:px-12">
       <div className="max-w-3xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <div>
@@ -144,7 +144,7 @@ export default function AdminBanner() {
 
         {loadingBanners ? (
           <div className="flex justify-center py-20">
-            <RefreshCw className="w-6 h-6 animate-spin text-[#E50914]" />
+            <RefreshCw className="w-6 h-6 animate-spin text-[#00A8E1]" />
           </div>
         ) : (
           <div className="space-y-3">
@@ -164,9 +164,9 @@ export default function AdminBanner() {
               return (
                 <div
                   key={banner.id}
-                  className="flex items-center gap-4 bg-[#1A1A1A] rounded-xl p-4 border border-white/5"
+                  className="flex items-center gap-4 bg-[#1A242F] rounded-xl p-4 border border-white/5"
                 >
-                  <div className="w-8 h-8 rounded-full bg-[#E50914]/20 text-[#E50914] flex items-center justify-center font-bold text-sm flex-shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-[#00A8E1]/20 text-[#00A8E1] flex items-center justify-center font-bold text-sm flex-shrink-0">
                     {banner.order}
                   </div>
 
@@ -242,7 +242,7 @@ export default function AdminBanner() {
                 </button>
               </div>
             ) : addingKind === 'catalog' ? (
-              <div className="bg-[#1A1A1A] rounded-xl p-4 border border-[#E50914]/30">
+              <div className="bg-[#1A242F] rounded-xl p-4 border border-[#00A8E1]/30">
                 <p className="text-gray-400 text-sm mb-3">
                   Escolha um título publicado (ordem {addingSlot}):
                 </p>
@@ -253,10 +253,10 @@ export default function AdminBanner() {
                         createMut.mutate({ series_id: seriesId, order: addingSlot, active: true });
                       }}
                     >
-                      <SelectTrigger className="bg-[#2A2A2A] border-white/10 text-white">
+                      <SelectTrigger className="bg-[#252E39] border-white/10 text-white">
                         <SelectValue placeholder="Selecione série ou filme..." />
                       </SelectTrigger>
-                      <SelectContent className="bg-[#2A2A2A] border-white/10">
+                      <SelectContent className="bg-[#252E39] border-white/10">
                         {allSeries
                           .filter((s) => !banners.some((b) => b.series_id && b.series_id === s.id))
                           .map((s) => (
@@ -278,7 +278,7 @@ export default function AdminBanner() {
                 </div>
               </div>
             ) : (
-              <div className="bg-[#1A1A1A] rounded-xl p-4 border border-[#0057FF]/30 space-y-4">
+              <div className="bg-[#1A242F] rounded-xl p-4 border border-[#0057FF]/30 space-y-4">
                 <p className="text-gray-300 text-sm font-medium">
                   Slide promocional (ordem {addingSlot}) — imagens próprias, sem vínculo com série
                 </p>
@@ -308,13 +308,13 @@ export default function AdminBanner() {
                   placeholder="Título no hero (ex.: Black Friday, Novidade…)"
                   value={customForm.title}
                   onChange={(e) => setCustomForm((f) => ({ ...f, title: e.target.value }))}
-                  className="bg-[#2A2A2A] border-none text-white"
+                  className="bg-[#252E39] border-none text-white"
                 />
                 <Textarea
                   placeholder="Subtítulo / descrição curta (opcional)"
                   value={customForm.description}
                   onChange={(e) => setCustomForm((f) => ({ ...f, description: e.target.value }))}
-                  className="bg-[#2A2A2A] border-none text-white min-h-[72px]"
+                  className="bg-[#252E39] border-none text-white min-h-[72px]"
                 />
                 <div>
                   <p className="text-xs text-gray-400 mb-1">Link do botão “Acessar” (opcional)</p>
@@ -322,7 +322,7 @@ export default function AdminBanner() {
                     placeholder="Ex: /Subscription ou https://..."
                     value={customForm.link_url}
                     onChange={(e) => setCustomForm((f) => ({ ...f, link_url: e.target.value }))}
-                    className="bg-[#2A2A2A] border-none text-white"
+                    className="bg-[#252E39] border-none text-white"
                   />
                 </div>
                 <div className="flex gap-2 justify-end">

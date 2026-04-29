@@ -53,9 +53,9 @@ export default function PullToRefresh({ onRefresh, children }) {
           className="absolute top-0 left-0 right-0 flex items-center justify-center z-40 transition-all"
           style={{ height: pullY, opacity: progress }}
         >
-          <div className={`w-8 h-8 rounded-full bg-[#1A1A1A] border border-white/10 flex items-center justify-center shadow-lg`}>
+          <div className={`w-8 h-8 rounded-full bg-[#1A242F] border border-white/10 flex items-center justify-center shadow-lg`}>
             <RefreshCw
-              className={`w-4 h-4 text-[#E50914] transition-transform ${refreshing ? 'animate-spin' : ''}`}
+              className={`w-4 h-4 text-[#00A8E1] transition-transform ${refreshing ? 'animate-spin' : ''}`}
               style={{ transform: `rotate(${progress * 360}deg)` }}
             />
           </div>

@@ -131,8 +131,8 @@ export default function SeriesDetail() {
 
   if (!series) {
     return (
-      <div className="min-h-screen bg-[#141414] flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-[#E50914] border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-[#0F171E] flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-[#00A8E1] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -142,7 +142,7 @@ export default function SeriesDetail() {
   const bannerMobile = series.banner_mobile_url || series.banner_url;
 
   return (
-    <div className="min-h-screen bg-[#141414]">
+    <div className="min-h-screen bg-[#0F171E]">
       {/* Banner — começa do topo (Navbar stack é transparente/sobreposta) */}
       <div className="relative h-[55vh] md:h-[70vh]">
         {bannerDesktop || bannerMobile ? (
@@ -161,10 +161,10 @@ export default function SeriesDetail() {
         ) : series.cover_url ? (
           <img src={series.cover_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
         ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-[#E50914]/20 to-[#141414]" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#00A8E1]/20 to-[#0F171E]" />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-[#141414]/40 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#141414]/80 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0F171E] via-[#0F171E]/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0F171E]/80 to-transparent" />
 
         <div className="absolute bottom-10 md:bottom-16 left-0 right-0 px-4 md:px-12">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}>
@@ -211,7 +211,7 @@ export default function SeriesDetail() {
             <select
               value={selectedSeason}
               onChange={e => setSelectedSeason(Number(e.target.value))}
-              className="bg-[#2A2A2A] border border-white/20 text-white px-4 py-2 rounded text-sm font-medium appearance-none"
+              className="bg-[#252E39] border border-white/20 text-white px-4 py-2 rounded text-sm font-medium appearance-none"
               style={{ colorScheme: 'dark' }}
             >
               {seasons.map(s => (
@@ -244,7 +244,7 @@ export default function SeriesDetail() {
 
                 {/* Thumbnail */}
                 <div className="shrink-0 w-28 md:w-36 relative">
-                  <div className="aspect-video rounded overflow-hidden bg-[#2A2A2A]">
+                  <div className="aspect-video rounded overflow-hidden bg-[#252E39]">
                     {ep.thumbnail_url || series.cover_url ? (
                       <img src={ep.thumbnail_url || series.cover_url} alt="" className={`w-full h-full object-cover transition-transform duration-300 ${!isLocked ? 'group-hover:scale-105' : 'opacity-40'}`} />
                     ) : (
@@ -271,7 +271,7 @@ export default function SeriesDetail() {
                   {/* Progress bar */}
                   {progress > 0 && !isLocked && (
                     <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-gray-700 rounded-b">
-                      <div className="h-full bg-[#E50914] rounded-b" style={{ width: `${progress}%` }} />
+                      <div className="h-full bg-[#00A8E1] rounded-b" style={{ width: `${progress}%` }} />
                     </div>
                   )}
                 </div>
@@ -318,7 +318,7 @@ export default function SeriesDetail() {
               <Link
                 key={ep.id}
                 to={`/Player?episodeId=${ep.id}`}
-                className="flex items-center gap-4 px-2 py-4 rounded hover:bg-[#2A2A2A] transition-colors group border-b border-white/5 last:border-b-0"
+                className="flex items-center gap-4 px-2 py-4 rounded hover:bg-[#252E39] transition-colors group border-b border-white/5 last:border-b-0"
               >
                 {rowContent}
               </Link>

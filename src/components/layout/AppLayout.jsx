@@ -65,7 +65,7 @@ export default function AppLayout() {
   const isStackRoute = STACK_ROUTES.some(r => location.pathname.startsWith(r));
 
   return (
-    <div className="min-h-screen bg-[#0F0F0F] text-white">
+    <div className="min-h-screen bg-[#0F171E] text-white">
       <Navbar isStackRoute={isStackRoute} />
       <PullToRefresh onRefresh={handleRefresh}>
         <main className={isStackRoute ? 'pb-0' : 'pb-16 md:pb-0'}>

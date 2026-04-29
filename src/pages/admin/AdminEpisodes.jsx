@@ -113,7 +113,7 @@ export default function AdminEpisodes() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0F0F0F] pt-20 md:pt-24 px-4 md:px-12">
+    <div className="min-h-screen bg-[#0F171E] pt-20 md:pt-24 px-4 md:px-12">
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center gap-4 mb-6">
           <Link to="/AdminSeries" className="text-gray-400 hover:text-white"><ArrowLeft className="w-5 h-5" /></Link>
@@ -121,22 +121,22 @@ export default function AdminEpisodes() {
             <h1 className="text-2xl font-bold">Episódios</h1>
             {series && <p className="text-sm text-gray-400">{series.title}</p>}
           </div>
-          <Button onClick={openCreate} className="bg-[#E50914] hover:bg-[#FF3D3D]">
+          <Button onClick={openCreate} className="bg-[#00A8E1] hover:bg-[#36CFFF]">
             <Plus className="w-4 h-4 mr-2" /> Novo Episódio
           </Button>
         </div>
 
         <div className="space-y-2">
           {sorted.map(ep => (
-            <div key={ep.id} className="flex items-center gap-4 p-3 bg-[#1A1A1A] rounded-lg hover:bg-[#222] transition-colors">
+            <div key={ep.id} className="flex items-center gap-4 p-3 bg-[#1A242F] rounded-lg hover:bg-[#252E39] transition-colors">
               <span className="text-gray-500 font-mono text-sm w-16 shrink-0">
                 T{ep.season || 1}E{ep.number}
               </span>
-              <div className="shrink-0 w-24 aspect-video rounded overflow-hidden bg-[#2A2A2A]">
+              <div className="shrink-0 w-24 aspect-video rounded overflow-hidden bg-[#252E39]">
                 {(ep.thumbnail_url || series?.cover_url) ? (
                   <img src={ep.thumbnail_url || series?.cover_url} alt="" className="w-full h-full object-cover" />
                 ) : (
-                  <div className="w-full h-full bg-[#2A2A2A]" />
+                  <div className="w-full h-full bg-[#252E39]" />
                 )}
               </div>
               <div className="flex-1 min-w-0">
@@ -157,21 +157,21 @@ export default function AdminEpisodes() {
         </div>
 
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogContent className="bg-[#1A1A1A] border-white/10 text-white max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogContent className="bg-[#1A242F] border-white/10 text-white max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{editing ? 'Editar Episódio' : 'Novo Episódio'}</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
-              <Input placeholder="Título do Episódio" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} className="bg-[#2A2A2A] border-none" />
+              <Input placeholder="Título do Episódio" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} className="bg-[#252E39] border-none" />
               <div className="grid grid-cols-3 gap-3">
-                <Input type="number" placeholder="Temporada" value={form.season} onChange={e => setForm({ ...form, season: e.target.value })} className="bg-[#2A2A2A] border-none" />
-                <Input type="number" placeholder="Número" value={form.number} onChange={e => setForm({ ...form, number: e.target.value })} className="bg-[#2A2A2A] border-none" />
-                <Input type="number" placeholder="Duração (seg)" value={form.duration} onChange={e => setForm({ ...form, duration: e.target.value })} className="bg-[#2A2A2A] border-none" />
+                <Input type="number" placeholder="Temporada" value={form.season} onChange={e => setForm({ ...form, season: e.target.value })} className="bg-[#252E39] border-none" />
+                <Input type="number" placeholder="Número" value={form.number} onChange={e => setForm({ ...form, number: e.target.value })} className="bg-[#252E39] border-none" />
+                <Input type="number" placeholder="Duração (seg)" value={form.duration} onChange={e => setForm({ ...form, duration: e.target.value })} className="bg-[#252E39] border-none" />
               </div>
-              <Textarea placeholder="Descrição" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} className="bg-[#2A2A2A] border-none h-20" />
+              <Textarea placeholder="Descrição" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} className="bg-[#252E39] border-none h-20" />
               <div className="space-y-1">
                 <p className="text-xs text-gray-400">URL do Vídeo — cole URL do Google Drive ou Bunny</p>
-                <Input placeholder="Ex: https://drive.google.com/... ou https://seu-cdn.b-cdn.net/.../playlist.m3u8" value={form.video_url} onChange={e => setForm({ ...form, video_url: e.target.value })} className="bg-[#2A2A2A] border-none" />
+                <Input placeholder="Ex: https://drive.google.com/... ou https://seu-cdn.b-cdn.net/.../playlist.m3u8" value={form.video_url} onChange={e => setForm({ ...form, video_url: e.target.value })} className="bg-[#252E39] border-none" />
                 {form.video_url && (form.video_url.includes('b-cdn.net') || form.video_url.includes('bunnycdn.com')) && (
                   <p className="text-xs text-blue-400">🎬 Detectado como Bunny — será reproduzido como vídeo nativo.</p>
                 )}
@@ -195,7 +195,7 @@ export default function AdminEpisodes() {
                 type="button"
                 onClick={handleSubmit}
                 disabled={createMut.isPending || updateMut.isPending}
-                className="w-full bg-[#E50914] hover:bg-[#FF3D3D]"
+                className="w-full bg-[#00A8E1] hover:bg-[#36CFFF]"
               >
                 {editing ? (updateMut.isPending ? 'Salvando…' : 'Salvar') : createMut.isPending ? 'Criando…' : 'Criar'}
               </Button>

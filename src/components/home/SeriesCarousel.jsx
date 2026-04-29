@@ -32,7 +32,7 @@ export default function SeriesCarousel({ title, series, myListIds, onToggleList,
       <div className="relative">
         <button
           onClick={() => scroll('left')}
-          className="absolute left-0 top-0 bottom-0 z-10 w-10 md:w-14 flex items-center justify-center bg-gradient-to-r from-[#0F0F0F] to-transparent opacity-0 group-hover/carousel:opacity-100 transition-opacity"
+          className="absolute left-0 top-0 bottom-0 z-10 w-10 md:w-14 flex items-center justify-center bg-gradient-to-r from-[#0F171E] to-transparent opacity-0 group-hover/carousel:opacity-100 transition-opacity"
         >
           <ChevronLeft className="w-6 h-6 md:w-8 md:h-8" />
         </button>
@@ -55,7 +55,7 @@ export default function SeriesCarousel({ title, series, myListIds, onToggleList,
 
         <button
           onClick={() => scroll('right')}
-          className="absolute right-0 top-0 bottom-0 z-10 w-10 md:w-14 flex items-center justify-center bg-gradient-to-l from-[#0F0F0F] to-transparent opacity-0 group-hover/carousel:opacity-100 transition-opacity"
+          className="absolute right-0 top-0 bottom-0 z-10 w-10 md:w-14 flex items-center justify-center bg-gradient-to-l from-[#0F171E] to-transparent opacity-0 group-hover/carousel:opacity-100 transition-opacity"
         >
           <ChevronRight className="w-6 h-6 md:w-8 md:h-8" />
         </button>

@@ -34,7 +34,7 @@ export default function Navbar({ isStackRoute = false }) {
   // Navbar de stack (SeriesDetail, Player) — só mostra botão voltar no mobile
   if (isStackRoute) {
     return (
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#0F0F0F]/95 backdrop-blur-md" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#0F171E]/95 backdrop-blur-md" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="flex items-center h-14 px-2">
           <button
             onClick={() => navigate(-1)}
@@ -58,7 +58,7 @@ export default function Navbar({ isStackRoute = false }) {
 
   // Navbar padrão (tabs)
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'bg-[#0F0F0F]/95 backdrop-blur-md shadow-2xl' : 'bg-gradient-to-b from-black/80 to-transparent'}`}>
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'bg-[#0F171E]/95 backdrop-blur-md shadow-2xl' : 'bg-gradient-to-b from-black/80 to-transparent'}`}>
       <div className="max-w-[1400px] mx-auto px-4 md:px-8">
         <div className="flex items-center justify-between h-16 md:h-20">
           <div className="flex items-center gap-8">
@@ -79,12 +79,12 @@ export default function Navbar({ isStackRoute = false }) {
           </div>
 
           <div className="flex items-center gap-3 md:gap-5">
-            <Link to="/Search" className="p-2 hover:text-[#E50914] transition-colors">
+            <Link to="/Search" className="p-2 hover:text-[#00A8E1] transition-colors">
               <Search className="w-5 h-5" />
             </Link>
             <Link
               to="/Subscription"
-              className={`hidden md:block text-sm font-semibold px-4 py-1.5 rounded-full border transition-all ${location.pathname === '/Subscription' ? 'bg-[#E50914] border-[#E50914] text-white' : 'border-[#E50914] text-[#E50914] hover:bg-[#E50914] hover:text-white'}`}
+              className={`hidden md:block text-sm font-semibold px-4 py-1.5 rounded-full border transition-all ${location.pathname === '/Subscription' ? 'bg-[#00A8E1] border-[#00A8E1] text-white' : 'border-[#00A8E1] text-[#00A8E1] hover:bg-[#00A8E1] hover:text-white'}`}
             >
               Assinar
             </Link>
@@ -102,7 +102,7 @@ export default function Navbar({ isStackRoute = false }) {
                 className="flex items-center gap-2"
                 aria-label="Abrir menu do perfil"
               >
-                <div className="w-8 h-8 rounded-md overflow-hidden bg-[#E50914] flex items-center justify-center ring-2 ring-transparent group-hover:ring-white/30 transition-all">
+                <div className="w-8 h-8 rounded-md overflow-hidden bg-[#00A8E1] flex items-center justify-center ring-2 ring-transparent group-hover:ring-white/30 transition-all">
                   {activeProfile?.avatar_url ? (
                     <img src={activeProfile.avatar_url} alt="" className="w-full h-full object-cover" />
                   ) : (
@@ -115,7 +115,7 @@ export default function Navbar({ isStackRoute = false }) {
               </button>
 
               <div className="absolute right-0 top-8 hidden pt-3 group-focus-within:block group-hover:block">
-                <div className="w-48 rounded-xl border border-white/10 bg-[#1A1A1A] p-2 shadow-2xl">
+                <div className="w-48 rounded-xl border border-white/10 bg-[#1A242F] p-2 shadow-2xl">
                   <button
                     type="button"
                     onClick={() => {
