@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
-import { base44 } from '@/api/base44Client';
+import {
+	createEpisode,
+	deleteEpisode,
+	getSeriesById,
+	listEpisodesBySeries,
+	updateEpisode,
+} from '@/api/catalog';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { Plus, Pencil, Trash2, ArrowLeft } from 'lucide-react';
@@ -19,13 +25,13 @@ export default function AdminEpisodes() {
 
   const { data: series } = useQuery({
     queryKey: ['series', seriesId],
-    queryFn: async () => { const l = await base44.entities.Series.filter({ id: seriesId }); return l[0]; },
+    queryFn: () => getSeriesById(seriesId),
     enabled: !!seriesId,
   });
 
   const { data: episodes = [] } = useQuery({
     queryKey: ['episodes', seriesId],
-    queryFn: () => base44.entities.Episode.filter({ series_id: seriesId }),
+    queryFn: () => listEpisodesBySeries(seriesId),
     enabled: !!seriesId,
   });
 
@@ -35,17 +41,17 @@ export default function AdminEpisodes() {
   });
 
   const createMut = useMutation({
-    mutationFn: (data) => base44.entities.Episode.create({ ...data, series_id: seriesId }),
+    mutationFn: (data) => createEpisode({ ...data, series_id: seriesId }),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['episodes'] }); closeDialog(); },
   });
 
   const updateMut = useMutation({
-    mutationFn: ({ id, data }) => base44.entities.Episode.update(id, data),
+    mutationFn: ({ id, data }) => updateEpisode(id, data),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['episodes'] }); closeDialog(); },
   });
 
   const deleteMut = useMutation({
-    mutationFn: (id) => base44.entities.Episode.delete(id),
+    mutationFn: (id) => deleteEpisode(id),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['episodes'] }),
   });
 

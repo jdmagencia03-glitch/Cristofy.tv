@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
+import { createEpisode, listAllSeriesAdmin } from '@/api/catalog';
 import { useQuery } from '@tanstack/react-query';
 import { Upload, Loader2, CheckCircle2, ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -14,7 +15,7 @@ export default function AdminEpisodeCreator() {
 
   const { data: seriesList = [] } = useQuery({
     queryKey: ['allSeries'],
-    queryFn: () => base44.entities.Series.list(),
+    queryFn: () => listAllSeriesAdmin(),
   });
 
   const handleImageChange = (e) => {
@@ -62,7 +63,7 @@ export default function AdminEpisodeCreator() {
       // Create each episode
       const created = [];
       for (const ep of extracted.episodes) {
-        await base44.entities.Episode.create({
+        await createEpisode({
           series_id: selectedSeries,
           title: ep.title,
           season: ep.season || 1,

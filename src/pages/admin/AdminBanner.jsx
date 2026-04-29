@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
-import { base44 } from '@/api/base44Client';
+import {
+	createFeaturedBanner,
+	deleteFeaturedBanner,
+	listFeaturedBannersAdmin,
+	listPublishedSeries,
+	updateFeaturedBanner,
+} from '@/api/catalog';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, Trash2, RefreshCw, ArrowUp, ArrowDown, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -12,16 +18,16 @@ export default function AdminBanner() {
 
   const { data: banners = [], isLoading: loadingBanners } = useQuery({
     queryKey: ['featuredBanners'],
-    queryFn: () => base44.entities.FeaturedBanner.list('order', 10),
+    queryFn: () => listFeaturedBannersAdmin(),
   });
 
   const { data: allSeries = [] } = useQuery({
     queryKey: ['seriesAll'],
-    queryFn: () => base44.entities.Series.filter({ published: true }),
+    queryFn: () => listPublishedSeries(),
   });
 
   const createMut = useMutation({
-    mutationFn: (data) => base44.entities.FeaturedBanner.create(data),
+    mutationFn: (data) => createFeaturedBanner(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['featuredBanners'] });
       setAddingSlot(null);
@@ -29,12 +35,12 @@ export default function AdminBanner() {
   });
 
   const updateMut = useMutation({
-    mutationFn: ({ id, data }) => base44.entities.FeaturedBanner.update(id, data),
+    mutationFn: ({ id, data }) => updateFeaturedBanner(id, data),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['featuredBanners'] }),
   });
 
   const deleteMut = useMutation({
-    mutationFn: (id) => base44.entities.FeaturedBanner.delete(id),
+    mutationFn: (id) => deleteFeaturedBanner(id),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['featuredBanners'] }),
   });
 
@@ -61,7 +67,7 @@ export default function AdminBanner() {
             <h1 className="text-2xl font-bold text-white">Banner Principal</h1>
             <p className="text-gray-400 text-sm mt-1">
               Configure até 5 séries no carrossel da página inicial. As imagens grandes usam o{' '}
-              <strong className="text-gray-300">banner</strong> e a <strong className="text-gray-300">capa</strong> de cada série — defina as URLs em Admin → Séries (sem Firebase Storage).
+              <strong className="text-gray-300">banner</strong> e a <strong className="text-gray-300">capa</strong> de cada série — defina as URLs em Admin → Séries (URL ou upload no Firebase Storage).
             </p>
           </div>
           <Link to="/Admin">

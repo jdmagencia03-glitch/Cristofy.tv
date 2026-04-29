@@ -1,5 +1,10 @@
 import React, { useState } from 'react';
-import { base44 } from '@/api/base44Client';
+import {
+	createSeries,
+	deleteSeries,
+	listAllSeriesAdmin,
+	updateSeries,
+} from '@/api/catalog';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { Plus, Pencil, Trash2, ArrowLeft, EyeOff, Star } from 'lucide-react';
@@ -19,21 +24,21 @@ export default function AdminSeries() {
 
   const { data: series = [], isLoading } = useQuery({
     queryKey: ['adminSeries'],
-    queryFn: () => base44.entities.Series.list('-created_date'),
+    queryFn: () => listAllSeriesAdmin(),
   });
 
   const createMut = useMutation({
-    mutationFn: (data) => base44.entities.Series.create(data),
+    mutationFn: (data) => createSeries(data),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['adminSeries'] }); closeDialog(); },
   });
 
   const updateMut = useMutation({
-    mutationFn: ({ id, data }) => base44.entities.Series.update(id, data),
+    mutationFn: ({ id, data }) => updateSeries(id, data),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['adminSeries'] }); closeDialog(); },
   });
 
   const deleteMut = useMutation({
-    mutationFn: (id) => base44.entities.Series.delete(id),
+    mutationFn: (id) => deleteSeries(id),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['adminSeries'] }),
   });
 
