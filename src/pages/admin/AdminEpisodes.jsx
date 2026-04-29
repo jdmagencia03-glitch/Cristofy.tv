@@ -14,6 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import ImageUpload from '@/components/admin/ImageUpload';
+import { toast } from 'sonner';
 
 export default function AdminEpisodes() {
   const params = new URLSearchParams(window.location.search);
@@ -42,17 +43,31 @@ export default function AdminEpisodes() {
 
   const createMut = useMutation({
     mutationFn: (data) => createEpisode({ ...data, series_id: seriesId }),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['episodes'] }); closeDialog(); },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['episodes', seriesId] });
+      closeDialog();
+      toast.success('Episódio criado');
+    },
+    onError: (e) => toast.error(e?.message || 'Não foi possível criar. Faça login e tente de novo.'),
   });
 
   const updateMut = useMutation({
     mutationFn: ({ id, data }) => updateEpisode(id, data),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['episodes'] }); closeDialog(); },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['episodes', seriesId] });
+      closeDialog();
+      toast.success('Episódio atualizado');
+    },
+    onError: (e) => toast.error(e?.message || 'Não foi possível salvar.'),
   });
 
   const deleteMut = useMutation({
     mutationFn: (id) => deleteEpisode(id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['episodes'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['episodes', seriesId] });
+      toast.success('Removido');
+    },
+    onError: (e) => toast.error(e?.message || 'Não foi possível excluir.'),
   });
 
   const openCreate = () => {
@@ -76,7 +91,20 @@ export default function AdminEpisodes() {
   const closeDialog = () => { setDialogOpen(false); setEditing(null); };
 
   const handleSubmit = () => {
-    const data = { ...form, season: Number(form.season), number: Number(form.number), duration: form.duration ? Number(form.duration) : undefined };
+    if (!form.title?.trim()) {
+      toast.error('Preencha o título do episódio');
+      return;
+    }
+    if (!seriesId) {
+      toast.error('Série inválida. Volte e escolha uma série.');
+      return;
+    }
+    const data = {
+      ...form,
+      season: Number(form.season),
+      number: Number(form.number),
+      duration: form.duration === '' || form.duration == null ? undefined : Number(form.duration),
+    };
     if (editing) {
       updateMut.mutate({ id: editing.id, data });
     } else {
@@ -163,7 +191,14 @@ export default function AdminEpisodes() {
                   aspectRatio="square"
                 />
               </div>
-              <Button onClick={handleSubmit} className="w-full bg-[#E50914] hover:bg-[#FF3D3D]">{editing ? 'Salvar' : 'Criar'}</Button>
+              <Button
+                type="button"
+                onClick={handleSubmit}
+                disabled={createMut.isPending || updateMut.isPending}
+                className="w-full bg-[#E50914] hover:bg-[#FF3D3D]"
+              >
+                {editing ? (updateMut.isPending ? 'Salvando…' : 'Salvar') : createMut.isPending ? 'Criando…' : 'Criar'}
+              </Button>
             </div>
           </DialogContent>
         </Dialog>

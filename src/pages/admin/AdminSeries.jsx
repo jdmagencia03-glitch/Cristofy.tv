@@ -15,6 +15,9 @@ import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import ImageUpload from '@/components/admin/ImageUpload';
+import { toast } from 'sonner';
+
+const HIGHLIGHT_NONE = '__none__';
 
 export default function AdminSeries() {
   const queryClient = useQueryClient();
@@ -41,17 +44,28 @@ export default function AdminSeries() {
 
   const createMut = useMutation({
     mutationFn: (data) => createSeries(data),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['adminSeries'] }); closeDialog(); },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['adminSeries'] });
+      closeDialog();
+      toast.success('Título criado');
+    },
+    onError: (e) => toast.error(e?.message || 'Não foi possível criar. Verifique login no Firebase e tente de novo.'),
   });
 
   const updateMut = useMutation({
     mutationFn: ({ id, data }) => updateSeries(id, data),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['adminSeries'] }); closeDialog(); },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['adminSeries'] });
+      closeDialog();
+      toast.success('Alterações salvas');
+    },
+    onError: (e) => toast.error(e?.message || 'Não foi possível salvar.'),
   });
 
   const deleteMut = useMutation({
     mutationFn: (id) => deleteSeries(id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['adminSeries'] }),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['adminSeries'] }); toast.success('Removido'); },
+    onError: (e) => toast.error(e?.message || 'Não foi possível excluir.'),
   });
 
   const openCreate = () => {
@@ -87,6 +101,10 @@ export default function AdminSeries() {
   const closeDialog = () => { setDialogOpen(false); setEditing(null); };
 
   const handleSubmit = () => {
+    if (!form.title?.trim()) {
+      toast.error('Preencha o título');
+      return;
+    }
     const data = { ...form, year: form.year ? Number(form.year) : undefined };
     if (editing) {
       updateMut.mutate({ id: editing.id, data });
@@ -192,15 +210,27 @@ export default function AdminSeries() {
                 <label className="flex items-center gap-2 text-sm"><Switch checked={form.published} onCheckedChange={v => setForm({ ...form, published: v })} /> Publicada</label>
                 <label className="flex items-center gap-2 text-sm"><Switch checked={form.featured} onCheckedChange={v => setForm({ ...form, featured: v })} /> Destaque</label>
               </div>
-              <Select value={form.highlighted_home_section || ''} onValueChange={v => setForm({ ...form, highlighted_home_section: v || null })}>
+              <Select
+                value={form.highlighted_home_section ?? HIGHLIGHT_NONE}
+                onValueChange={(v) =>
+                  setForm({ ...form, highlighted_home_section: v === HIGHLIGHT_NONE ? null : v })
+                }
+              >
                 <SelectTrigger className="bg-[#2A2A2A] border-none"><SelectValue placeholder="Nenhuma seção especial" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={null}>Nenhuma seção especial</SelectItem>
+                  <SelectItem value={HIGHLIGHT_NONE}>Nenhuma seção especial</SelectItem>
                   <SelectItem value="mais_assistidos">Mais Assistidos</SelectItem>
                   <SelectItem value="destaques">Destaques</SelectItem>
                 </SelectContent>
               </Select>
-              <Button onClick={handleSubmit} className="w-full bg-[#E50914] hover:bg-[#FF3D3D]">{editing ? 'Salvar' : 'Criar'}</Button>
+              <Button
+                type="button"
+                onClick={handleSubmit}
+                disabled={createMut.isPending || updateMut.isPending}
+                className="w-full bg-[#E50914] hover:bg-[#FF3D3D]"
+              >
+                {editing ? (updateMut.isPending ? 'Salvando…' : 'Salvar') : createMut.isPending ? 'Criando…' : 'Criar'}
+              </Button>
             </div>
           </DialogContent>
         </Dialog>

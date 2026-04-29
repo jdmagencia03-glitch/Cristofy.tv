@@ -16,6 +16,14 @@ import {
 	writeBatch,
 } from 'firebase/firestore';
 
+/** Firestore rejeita `undefined` em documentos; removemos antes de addDoc/updateDoc. */
+function stripUndefined(input) {
+	if (input == null || typeof input !== 'object' || input instanceof Date) {
+		return input;
+	}
+	return Object.fromEntries(Object.entries(input).filter(([, v]) => v !== undefined));
+}
+
 function serializeValue(v) {
 	if (v == null) return v;
 	if (typeof v.toDate === 'function') return v.toDate().toISOString();
@@ -56,8 +64,9 @@ export async function getSeriesById(db, id) {
 }
 
 export async function createSeries(db, data) {
+	const clean = stripUndefined(data);
 	const ref = await addDoc(collection(db, 'series'), {
-		...data,
+		...clean,
 		created_date: serverTimestamp(),
 		updated_at: serverTimestamp(),
 	});
@@ -65,8 +74,9 @@ export async function createSeries(db, data) {
 }
 
 export async function updateSeries(db, id, data) {
+	const clean = stripUndefined(data);
 	await updateDoc(doc(db, 'series', id), {
-		...data,
+		...clean,
 		updated_at: serverTimestamp(),
 	});
 }
@@ -107,16 +117,18 @@ export async function listEpisodesForHome(db, max = 500) {
 }
 
 export async function createEpisode(db, data) {
+	const clean = stripUndefined(data);
 	const ref = await addDoc(collection(db, 'episodes'), {
-		...data,
+		...clean,
 		created_date: serverTimestamp(),
 	});
 	return { id: ref.id };
 }
 
 export async function updateEpisode(db, id, data) {
+	const clean = stripUndefined(data);
 	await updateDoc(doc(db, 'episodes', id), {
-		...data,
+		...clean,
 		updated_at: serverTimestamp(),
 	});
 }
@@ -140,15 +152,17 @@ export async function listFeaturedBannersAdmin(db) {
 }
 
 export async function createFeaturedBanner(db, data) {
+	const clean = stripUndefined(data);
 	const ref = await addDoc(collection(db, 'featured_banners'), {
-		...data,
+		...clean,
 		created_date: serverTimestamp(),
 	});
 	return { id: ref.id };
 }
 
 export async function updateFeaturedBanner(db, id, data) {
-	await updateDoc(doc(db, 'featured_banners', id), data);
+	const clean = stripUndefined(data);
+	await updateDoc(doc(db, 'featured_banners', id), clean);
 }
 
 export async function deleteFeaturedBanner(db, id) {
