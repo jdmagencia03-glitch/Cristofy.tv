@@ -42,12 +42,11 @@ export default function Navbar({ isStackRoute = false }) {
             <ArrowLeft className="w-6 h-6" />
           </button>
           {/* Desktop: mantém logo e links */}
-          <Link to="/Home" className="hidden md:flex items-center ml-4">
-            <img
-              src="/cristofy-logo.png"
-              alt="CristoFy"
-              className="h-10 w-auto object-contain"
-            />
+          <Link to="/Home" className="hidden md:flex items-center ml-4" aria-label="CristoFy — Início">
+            <span className="text-2xl font-black tracking-tight">
+              <span className="text-[#0057FF]">Cristo</span>
+              <span className="text-white">Fy</span>
+            </span>
           </Link>
           <div className="hidden md:flex items-center gap-6 ml-8">
             {links.map(l => (
@@ -65,12 +64,11 @@ export default function Navbar({ isStackRoute = false }) {
       <div className="max-w-[1400px] mx-auto px-4 md:px-8">
         <div className="flex items-center justify-between h-16 md:h-20">
           <div className="flex items-center gap-8">
-            <Link to="/Home" className="flex items-center shrink-0">
-              <img
-                src="/cristofy-logo.png"
-                alt="CristoFy"
-                className="h-10 md:h-12 w-auto object-contain"
-              />
+            <Link to="/Home" className="flex items-center shrink-0" aria-label="CristoFy — Início">
+              <span className="text-2xl md:text-3xl font-black tracking-tight">
+                <span className="text-[#0057FF]">Cristo</span>
+                <span className="text-white">Fy</span>
+              </span>
             </Link>
             <div className="hidden md:flex items-center gap-6">
               {links.slice(0, -1).map(l => (
