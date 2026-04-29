@@ -22,6 +22,9 @@ export default function ImageUpload({
 	onChange,
 	placeholder = 'https://...',
 	aspectRatio = 'cover',
+	minWidth = 0,
+	minHeight = 0,
+	qualityHint = '',
 }) {
 	const [uploading, setUploading] = useState(false);
 	const inputRef = useRef(null);
@@ -31,6 +34,14 @@ export default function ImageUpload({
 		if (!file) return;
 		setUploading(true);
 		try {
+			if (minWidth > 0 || minHeight > 0) {
+				const dims = await readImageDimensions(file);
+				if (dims.width < minWidth || dims.height < minHeight) {
+					throw new Error(
+						`Imagem pequena (${dims.width}x${dims.height}). Mínimo recomendado: ${minWidth}x${minHeight}.`
+					);
+				}
+			}
 			const url = await uploadImageFile(file);
 			onChange(url);
 			toast({
@@ -75,6 +86,9 @@ export default function ImageUpload({
 						Você precisa estar <strong className="text-gray-400">logado</strong>. No plano gratuito há cota de armazenamento;
 						o arquivo vira uma URL HTTPS salva no catálogo (capa/banner não somem).
 					</p>
+					{qualityHint && (
+						<p className="text-[10px] text-[#FFC107] mt-1 leading-snug">{qualityHint}</p>
+					)}
 					<input
 						ref={inputRef}
 						type="file"
@@ -143,4 +157,20 @@ export default function ImageUpload({
 			)}
 		</div>
 	);
+}
+
+function readImageDimensions(file) {
+	return new Promise((resolve, reject) => {
+		const url = URL.createObjectURL(file);
+		const img = new Image();
+		img.onload = () => {
+			resolve({ width: img.naturalWidth, height: img.naturalHeight });
+			URL.revokeObjectURL(url);
+		};
+		img.onerror = () => {
+			URL.revokeObjectURL(url);
+			reject(new Error('Não foi possível ler as dimensões da imagem.'));
+		};
+		img.src = url;
+	});
 }

@@ -288,6 +288,9 @@ export default function AdminBanner() {
                     value={customForm.banner_url}
                     onChange={(v) => setCustomForm((f) => ({ ...f, banner_url: v }))}
                     placeholder="Upload ou URL (recomendado 16:9 ou wide)"
+                    minWidth={1600}
+                    minHeight={900}
+                    qualityHint="Qualidade recomendada: 1920x1080 ou maior."
                   />
                 </div>
                 <div>
@@ -296,6 +299,9 @@ export default function AdminBanner() {
                     value={customForm.banner_mobile_url}
                     onChange={(v) => setCustomForm((f) => ({ ...f, banner_mobile_url: v }))}
                     placeholder="Upload ou URL (retrato / 9:16)"
+                    minWidth={900}
+                    minHeight={1600}
+                    qualityHint="Para mobile, prefira 1080x1920 (ou maior)."
                   />
                 </div>
                 <Input

@@ -206,6 +206,9 @@ export default function AdminSeries() {
                   value={form.banner_url}
                   onChange={(v) => setForm({ ...form, banner_url: v })}
                   placeholder="Upload ou URL — exibido em telas md e maiores"
+                  minWidth={1600}
+                  minHeight={900}
+                  qualityHint="Qualidade recomendada: 1920x1080 ou maior para não ficar borrado no banner."
                 />
               </div>
               <div>
@@ -214,6 +217,9 @@ export default function AdminSeries() {
                   value={form.banner_mobile_url}
                   onChange={(v) => setForm({ ...form, banner_mobile_url: v })}
                   placeholder="Upload ou URL — só no celular"
+                  minWidth={900}
+                  minHeight={1600}
+                  qualityHint="Para mobile, prefira 1080x1920 (ou acima) para melhor nitidez."
                 />
               </div>
               <div className="flex items-center gap-6">
