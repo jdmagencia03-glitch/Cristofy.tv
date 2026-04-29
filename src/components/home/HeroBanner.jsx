@@ -12,6 +12,14 @@ function seriesBannerSources(series) {
   return { desktop, mobile };
 }
 
+function isCustomHero(s) {
+  return s?.heroKind === 'custom';
+}
+
+function isExternalUrl(url) {
+  return typeof url === 'string' && /^https?:\/\//i.test(url.trim());
+}
+
 export default function HeroBanner({ seriesList }) {
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState(1);
@@ -35,6 +43,8 @@ export default function HeroBanner({ seriesList }) {
 
   const series = items[current];
   const { desktop: bannerDesktop, mobile: bannerMobile } = seriesBannerSources(series);
+  const customHero = isCustomHero(series);
+  const detailBase = `/SeriesDetail?id=${series.id}`;
 
   const goTo = (index) => {
     setDirection(index > current ? 1 : -1);
@@ -84,7 +94,7 @@ export default function HeroBanner({ seriesList }) {
       <div className="absolute bottom-0 left-0 right-0 pb-16 md:pb-24 px-4 md:px-12 pr-16 md:pr-12">
         <AnimatePresence mode="wait">
           <motion.div
-            key={series.id + '-content'}
+            key={`${series.id}-content`}
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
@@ -95,7 +105,7 @@ export default function HeroBanner({ seriesList }) {
               <h1 className="text-xl md:text-2xl lg:text-3xl font-black leading-tight drop-shadow-2xl">
                 {series.title}
               </h1>
-              {series.content_type === 'movie' && (
+              {!customHero && series.content_type === 'movie' && (
                 <span className="text-[10px] md:text-xs uppercase tracking-wider px-2 py-0.5 rounded bg-white/15 text-white/90 shrink-0">Filme</span>
               )}
             </div>
@@ -106,29 +116,57 @@ export default function HeroBanner({ seriesList }) {
                 {series.description}
               </p>
             )}
-            <div className="flex items-center gap-3">
-              <Link
-                to={`/SeriesDetail?id=${series.id}`}
-                className="flex items-center gap-1.5 bg-white text-black px-2.5 py-1.5 md:px-6 md:py-3 rounded-md font-semibold text-xs md:text-base hover:bg-white/90 transition-all shadow-lg"
-              >
-                <Play className="w-3 h-3 md:w-5 md:h-5 fill-current" />
-                Assistir
-              </Link>
-              <Link
-                to={`/SeriesDetail?id=${series.id}`}
-                className="flex items-center gap-1.5 bg-white/20 backdrop-blur-sm text-white px-2.5 py-1.5 md:px-6 md:py-3 rounded-md font-semibold text-xs md:text-base hover:bg-white/30 transition-all whitespace-nowrap"
-              >
-                <Info className="w-3 h-3 md:w-5 md:h-5" />
-                Mais Informações
-              </Link>
-            </div>
-            <div className="flex items-center gap-3 mt-4 text-xs text-gray-400">
-              {series.year && <span>{series.year}</span>}
-              {series.age_rating && (
-                <span className="border border-gray-500 px-2 py-0.5 rounded text-gray-300">{series.age_rating}</span>
-              )}
-              {series.category && <span>{series.category}</span>}
-            </div>
+            {customHero ? (
+              series.custom_link_url ? (
+                <div className="flex items-center gap-3 flex-wrap">
+                  {isExternalUrl(series.custom_link_url) ? (
+                    <a
+                      href={series.custom_link_url.trim()}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 bg-white text-black px-2.5 py-1.5 md:px-6 md:py-3 rounded-md font-semibold text-xs md:text-base hover:bg-white/90 transition-all shadow-lg"
+                    >
+                      <Play className="w-3 h-3 md:w-5 md:h-5 fill-current" />
+                      Acessar
+                    </a>
+                  ) : (
+                    <Link
+                      to={series.custom_link_url.trim()}
+                      className="flex items-center gap-1.5 bg-white text-black px-2.5 py-1.5 md:px-6 md:py-3 rounded-md font-semibold text-xs md:text-base hover:bg-white/90 transition-all shadow-lg"
+                    >
+                      <Play className="w-3 h-3 md:w-5 md:h-5 fill-current" />
+                      Acessar
+                    </Link>
+                  )}
+                </div>
+              ) : null
+            ) : (
+              <div className="flex items-center gap-3">
+                <Link
+                  to={detailBase}
+                  className="flex items-center gap-1.5 bg-white text-black px-2.5 py-1.5 md:px-6 md:py-3 rounded-md font-semibold text-xs md:text-base hover:bg-white/90 transition-all shadow-lg"
+                >
+                  <Play className="w-3 h-3 md:w-5 md:h-5 fill-current" />
+                  Assistir
+                </Link>
+                <Link
+                  to={detailBase}
+                  className="flex items-center gap-1.5 bg-white/20 backdrop-blur-sm text-white px-2.5 py-1.5 md:px-6 md:py-3 rounded-md font-semibold text-xs md:text-base hover:bg-white/30 transition-all whitespace-nowrap"
+                >
+                  <Info className="w-3 h-3 md:w-5 md:h-5" />
+                  Mais Informações
+                </Link>
+              </div>
+            )}
+            {!customHero && (
+              <div className="flex items-center gap-3 mt-4 text-xs text-gray-400">
+                {series.year && <span>{series.year}</span>}
+                {series.age_rating && (
+                  <span className="border border-gray-500 px-2 py-0.5 rounded text-gray-300">{series.age_rating}</span>
+                )}
+                {series.category && <span>{series.category}</span>}
+              </div>
+            )}
           </motion.div>
         </AnimatePresence>
       </div>

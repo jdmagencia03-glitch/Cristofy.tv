@@ -110,16 +110,35 @@ export default function Home() {
     ? allSeries.filter(s => s.age_rating === 'Livre' || s.category?.toLowerCase().includes('infantil'))
     : allSeries;
 
-  // Banner slideshow: usa FeaturedBanner se configurado, senão fallback para featured/primeiro
+  // Carrossel hero: slides do catálogo OU banners só-imagem (sem série), configurados em Admin → Banner
   const bannerSeries = useMemo(() => {
     if (bannerItems.length > 0) {
-      return bannerItems
-        .sort((a, b) => a.order - b.order)
-        .map(item => visibleSeries.find(s => s.id === item.series_id))
-        .filter(Boolean);
+      const sorted = [...bannerItems].sort((a, b) => (a.order || 0) - (b.order || 0));
+      const slides = [];
+      for (const item of sorted) {
+        if (item.series_id) {
+          const s = visibleSeries.find((x) => x.id === item.series_id);
+          if (s) slides.push({ ...s, heroKind: 'series' });
+          continue;
+        }
+        const bu = item.custom_banner_url;
+        const bm = item.custom_banner_mobile_url;
+        if (!bu && !bm) continue;
+        slides.push({
+          id: `hero-custom-${item.id}`,
+          heroKind: 'custom',
+          title: item.custom_title || 'Destaque',
+          description: item.custom_description || '',
+          banner_url: bu || bm,
+          banner_mobile_url: bm || bu,
+          custom_link_url: item.link_url || '',
+          content_type: null,
+        });
+      }
+      return slides;
     }
     const fallback = visibleSeries.find(s => s.featured) || visibleSeries[0];
-    return fallback ? [fallback] : [];
+    return fallback ? [{ ...fallback, heroKind: 'series' }] : [];
   }, [bannerItems, visibleSeries]);
 
   const forCategoryRows = useMemo(
