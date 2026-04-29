@@ -3,19 +3,25 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Check, X } from 'lucide-react';
-import { format } from 'date-fns';
+import { toast } from 'sonner';
+import { safeBase44Query, safeFormatDatePtBr } from '@/lib/base44Safe';
 
 export default function AdminProposals() {
   const queryClient = useQueryClient();
 
-  const { data: proposals = [] } = useQuery({
+  const { data: result, isPending } = useQuery({
     queryKey: ['adminProposals'],
-    queryFn: () => base44.entities.ContentProposal.list('-created_date'),
+    queryFn: () =>
+      safeBase44Query(() => base44.entities.ContentProposal.list('-created_date')),
   });
+
+  const proposals = result?.ok ? result.data : [];
+  const base44Error = result && !result.ok ? result.error : null;
 
   const updateMut = useMutation({
     mutationFn: ({ id, status }) => base44.entities.ContentProposal.update(id, { status }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['adminProposals'] }),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['adminProposals'] }); toast.success('Atualizado'); },
+    onError: (e) => toast.error(e?.message || 'Falha ao atualizar'),
   });
 
   const statusColors = {
@@ -32,44 +38,62 @@ export default function AdminProposals() {
           <h1 className="text-2xl font-bold">Propostas de Conteúdo</h1>
         </div>
 
-        <div className="space-y-3">
-          {proposals.map(p => (
-            <div key={p.id} className="p-4 bg-[#1A1A1A] rounded-lg">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h3 className="font-semibold">{p.suggested_title}</h3>
-                    <span className={`text-xs px-2 py-0.5 rounded ${statusColors[p.status] || ''}`}>{p.status}</span>
+        {base44Error && (
+          <div className="mb-4 rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
+            <p className="font-medium">Propostas indisponíveis</p>
+            <p className="mt-1 text-amber-200/90">{base44Error}</p>
+            <Link to="/Admin" className="mt-3 inline-block text-sm text-white underline hover:no-underline">
+              Voltar ao painel admin
+            </Link>
+          </div>
+        )}
+
+        {isPending && <div className="py-12 text-center text-gray-500">Carregando…</div>}
+
+        {!isPending && (
+          <div className="space-y-3">
+            {proposals.map(p => {
+              const dateLabel = safeFormatDatePtBr(p.created_date);
+              return (
+              <div key={p.id} className="p-4 bg-[#1A1A1A] rounded-lg">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className="font-semibold">{p.suggested_title}</h3>
+                      <span className={`text-xs px-2 py-0.5 rounded ${statusColors[p.status] || ''}`}>{p.status}</span>
+                    </div>
+                    {p.description && <p className="text-sm text-gray-400 mt-1">{p.description}</p>}
+                    <div className="flex items-center gap-3 mt-2 text-xs text-gray-500">
+                      {p.user_email && <span>{p.user_email}</span>}
+                      {dateLabel && <span>{dateLabel}</span>}
+                    </div>
                   </div>
-                  {p.description && <p className="text-sm text-gray-400 mt-1">{p.description}</p>}
-                  <div className="flex items-center gap-3 mt-2 text-xs text-gray-500">
-                    {p.user_email && <span>{p.user_email}</span>}
-                    {p.created_date && <span>{format(new Date(p.created_date), 'dd/MM/yyyy')}</span>}
-                  </div>
-                </div>
-                {p.status === 'pendente' && (
-                  <div className="flex items-center gap-1 shrink-0">
-                    <button
-                      onClick={() => updateMut.mutate({ id: p.id, status: 'aprovado' })}
-                      className="p-2 text-green-400 hover:bg-green-500/10 rounded"
-                    >
-                      <Check className="w-5 h-5" />
-                    </button>
-                    <button
-                      onClick={() => updateMut.mutate({ id: p.id, status: 'rejeitado' })}
-                      className="p-2 text-red-400 hover:bg-red-500/10 rounded"
-                    >
-                      <X className="w-5 h-5" />
-                    </button>
-                  </div>
+                  {p.status === 'pendente' && (
+                    <div className="flex items-center gap-1 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => updateMut.mutate({ id: p.id, status: 'aprovado' })}
+                        className="p-2 text-green-400 hover:bg-green-500/10 rounded"
+                      >
+                        <Check className="w-5 h-5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => updateMut.mutate({ id: p.id, status: 'rejeitado' })}
+                        className="p-2 text-red-400 hover:bg-red-500/10 rounded"
+                      >
+                        <X className="w-5 h-5" />
+                      </button>
+                    </div>
                 )}
               </div>
             </div>
-          ))}
-          {proposals.length === 0 && (
-            <div className="text-center py-12 text-gray-500">Nenhuma proposta recebida.</div>
-          )}
-        </div>
+          );})}
+            {!base44Error && proposals.length === 0 && (
+              <div className="text-center py-12 text-gray-500">Nenhuma proposta recebida.</div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
