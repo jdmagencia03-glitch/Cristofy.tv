@@ -1,15 +1,24 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Play, Plus, Check, Clock } from 'lucide-react';
+import { Play, Plus, Check, Clock, Search } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function SeriesCard({ series, isInList, onToggleList, episodes = [], hideComingSoon = false }) {
   const [hovered, setHovered] = useState(false);
+  const isPlaceholder = Boolean(series._curatedPlaceholder);
+  const searchQ = series._searchQuery || series.title?.replace(/\s*\(\d{4}\)\s*$/, '').trim() || series.title;
+  const searchTo = `/Search?q=${encodeURIComponent(searchQ)}`;
 
   const seriesEpisodes = episodes.filter(e => e.series_id === series.id);
   const hasNoEpisodes = seriesEpisodes.length === 0;
   const hasAtLeastOneLink = seriesEpisodes.some(e => !!e.video_url);
-  const showComingSoon = !hideComingSoon && (hasNoEpisodes || !hasAtLeastOneLink);
+  const showComingSoon = !isPlaceholder && !hideComingSoon && (hasNoEpisodes || !hasAtLeastOneLink);
+  const showSugerido = isPlaceholder;
+
+  const CardWrap = Link;
+  const cardWrapProps = isPlaceholder
+    ? { to: searchTo, className: 'block' }
+    : { to: `/SeriesDetail?id=${series.id}`, className: 'block' };
 
   return (
     <motion.div
@@ -19,7 +28,7 @@ export default function SeriesCard({ series, isInList, onToggleList, episodes = 
       whileHover={{ scale: 1.05, zIndex: 10 }}
       transition={{ duration: 0.2 }}
     >
-      <Link to={`/SeriesDetail?id=${series.id}`}>
+      <CardWrap {...cardWrapProps}>
         <div className="aspect-[2/3] rounded-lg overflow-hidden bg-[#1A242F] shadow-lg relative">
           {series.cover_url ? (
             <img
@@ -30,6 +39,11 @@ export default function SeriesCard({ series, isInList, onToggleList, episodes = 
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#00A8E1]/30 to-[#1A242F] p-3">
               <span className="text-sm font-bold text-center text-white/80">{series.title}</span>
+            </div>
+          )}
+          {showSugerido && (
+            <div className="absolute top-2 left-2 z-[1] text-[10px] uppercase tracking-wide px-1.5 py-0.5 rounded bg-black/75 text-[#00A8E1]">
+              Catálogo sugerido
             </div>
           )}
           {showComingSoon && (
@@ -43,7 +57,7 @@ export default function SeriesCard({ series, isInList, onToggleList, episodes = 
             </div>
           )}
         </div>
-      </Link>
+      </CardWrap>
 
       {hovered && (
         <motion.div
@@ -54,14 +68,25 @@ export default function SeriesCard({ series, isInList, onToggleList, episodes = 
           <div className="bg-[#1A242F] rounded-b-lg p-3 shadow-2xl border-t border-[#00A8E1]/30">
             <p className="text-xs font-semibold text-white truncate mb-2">{series.title}</p>
             <div className="flex items-center gap-2">
-              <Link
-                to={`/SeriesDetail?id=${series.id}`}
-                className="w-7 h-7 rounded-full bg-white flex items-center justify-center hover:bg-gray-200 transition-colors"
-              >
-                <Play className="w-3.5 h-3.5 text-black fill-current ml-0.5" />
-              </Link>
-              {onToggleList && (
+              {isPlaceholder ? (
+                <Link
+                  to={searchTo}
+                  className="w-7 h-7 rounded-full bg-white flex items-center justify-center hover:bg-gray-200 transition-colors"
+                  title="Buscar no catálogo"
+                >
+                  <Search className="w-3.5 h-3.5 text-black" />
+                </Link>
+              ) : (
+                <Link
+                  to={`/SeriesDetail?id=${series.id}`}
+                  className="w-7 h-7 rounded-full bg-white flex items-center justify-center hover:bg-gray-200 transition-colors"
+                >
+                  <Play className="w-3.5 h-3.5 text-black fill-current ml-0.5" />
+                </Link>
+              )}
+              {onToggleList && !isPlaceholder && (
                 <button
+                  type="button"
                   onClick={(e) => { e.preventDefault(); onToggleList(series.id); }}
                   className="w-7 h-7 rounded-full border border-gray-500 flex items-center justify-center hover:border-white transition-colors"
                 >

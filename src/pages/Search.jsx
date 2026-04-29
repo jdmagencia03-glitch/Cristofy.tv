@@ -1,16 +1,24 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { base44 } from '@/api/base44Client';
 import { catalogUsesFirestore, listPublishedSeries } from '@/api/catalog';
 import { useQuery } from '@tanstack/react-query';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Search as SearchIcon, X, TrendingUp, Play } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Search() {
-  const [query, setQuery] = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const query = searchParams.get('q') ?? '';
 
   const fs = catalogUsesFirestore();
+
+  const setQuery = (value) => {
+    const next = new URLSearchParams(searchParams);
+    if (!value.trim()) next.delete('q');
+    else next.set('q', value);
+    setSearchParams(next, { replace: true });
+  };
 
   const { data: allSeries = [] } = useQuery({
     queryKey: ['series'],
@@ -58,7 +66,7 @@ export default function Search() {
             autoFocus
           />
           {query && (
-            <button onClick={() => setQuery('')} className="absolute right-4 top-1/2 -translate-y-1/2">
+            <button type="button" onClick={() => setQuery('')} className="absolute right-4 top-1/2 -translate-y-1/2">
               <X className="w-5 h-5 text-gray-400 hover:text-white transition-colors" />
             </button>
           )}
@@ -73,7 +81,7 @@ export default function Search() {
               {popularTerms.map(t => (
                 <button
                   key={t.id}
-                  onClick={() => setQuery(t.term)}
+                  onClick={() => setQuery(t.term ?? '')}
                   className="px-4 py-2 rounded-full bg-[#1A242F] text-sm text-gray-300 hover:bg-[#252E39] hover:text-white transition-all"
                 >
                   {t.term}

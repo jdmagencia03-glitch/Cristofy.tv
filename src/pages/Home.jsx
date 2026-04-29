@@ -7,6 +7,8 @@ import {
   listPublishedSeries,
 } from '@/api/catalog';
 import * as userLib from '@/lib/userLibrary';
+import { CURATED_CATEGORY_LABELS, resolveCuratedItems } from '@/lib/christianCurated';
+import { CHRISTIAN_CURATED_CATEGORIES } from '@/data/christianCuratedCatalog';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import HeroBanner from '../components/home/HeroBanner';
 import SeriesCarousel from '../components/home/SeriesCarousel';
@@ -156,11 +158,23 @@ export default function Home() {
     const cats = new Set();
     forCategoryRows.forEach(s => {
       if (s.category) {
-        s.category.split(',').forEach(c => cats.add(c.trim()));
+        s.category.split(',').forEach(c => {
+          const t = c.trim();
+          if (t && !CURATED_CATEGORY_LABELS.has(t)) cats.add(t);
+        });
       }
     });
     return Array.from(cats);
   }, [forCategoryRows]);
+
+  const curatedCarousels = useMemo(
+    () =>
+      CHRISTIAN_CURATED_CATEGORIES.map((def) => ({
+        ...def,
+        series: resolveCuratedItems(def, visibleSeries),
+      })),
+    [visibleSeries]
+  );
 
   const mostViewed = visibleSeries.filter(s => s.highlighted_home_section === 'mais_assistidos').length > 0
     ? visibleSeries.filter(s => s.highlighted_home_section === 'mais_assistidos')
@@ -182,6 +196,19 @@ export default function Home() {
         )}
 
         <ContinueWatching history={history} episodes={episodes} allSeries={allSeries} profileName={activeProfile?.name} />
+
+        {curatedCarousels.map(({ id, label, series }) => (
+          <SeriesCarousel
+            key={`curated-${id}`}
+            title={label}
+            series={series}
+            myListIds={myListIds}
+            onToggleList={toggleList}
+            category={label}
+            episodes={episodes}
+            hideComingSoonIds={mostViewedIds}
+          />
+        ))}
 
         {categories.map(cat => {
            const catSeries = byCategory(cat);

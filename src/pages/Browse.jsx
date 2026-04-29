@@ -1,9 +1,15 @@
 import React, { useState, useMemo } from 'react';
 import { listPublishedSeries } from '@/api/catalog';
+import { CHRISTIAN_CURATED_CATEGORIES } from '@/data/christianCuratedCatalog';
+import { CURATED_CATEGORY_LABELS, resolveCuratedItems } from '@/lib/christianCurated';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { Play, Filter } from 'lucide-react';
 import { motion } from 'framer-motion';
+
+const CURATED_BY_LABEL = Object.fromEntries(
+  CHRISTIAN_CURATED_CATEGORIES.map((c) => [c.label, c])
+);
 
 export default function Browse() {
   const params = new URLSearchParams(window.location.search);
@@ -17,13 +23,20 @@ export default function Browse() {
   });
 
   const categories = useMemo(() => {
-    const cats = new Set();
+    const fromDb = new Set();
     allSeries.forEach(s => {
       if (s.category) {
-        s.category.split(',').forEach(c => cats.add(c.trim()));
+        s.category.split(',').forEach(c => {
+          const t = c.trim();
+          if (t) fromDb.add(t);
+        });
       }
     });
-    return ['Todas', ...Array.from(cats)];
+    const curatedLabels = CHRISTIAN_CURATED_CATEGORIES.map((c) => c.label);
+    const rest = [...fromDb]
+      .filter((c) => !CURATED_CATEGORY_LABELS.has(c))
+      .sort((a, b) => a.localeCompare(b, 'pt'));
+    return ['Todas', ...curatedLabels, ...rest];
   }, [allSeries]);
 
   const filtered = useMemo(() => {
@@ -31,6 +44,19 @@ export default function Browse() {
     if (typeFilter === 'series') list = list.filter((s) => s.content_type !== 'movie');
     if (typeFilter === 'movie') list = list.filter((s) => s.content_type === 'movie');
     if (activeCategory === 'Todas') return list;
+
+    const def = CURATED_BY_LABEL[activeCategory];
+    if (def) {
+      let curatedList = resolveCuratedItems(def, allSeries);
+      if (typeFilter === 'series') {
+        curatedList = curatedList.filter((s) => s.content_type !== 'movie');
+      }
+      if (typeFilter === 'movie') {
+        curatedList = curatedList.filter((s) => s.content_type === 'movie');
+      }
+      return curatedList;
+    }
+
     return list.filter(s => s.category?.toLowerCase().includes(activeCategory.toLowerCase()));
   }, [allSeries, activeCategory, typeFilter]);
 
@@ -89,11 +115,20 @@ export default function Browse() {
             layout
             className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4"
           >
-            {filtered.map(s => (
+            {filtered.map(s => {
+              const isPlaceholder = Boolean(s._curatedPlaceholder);
+              const searchQ = s._searchQuery || s.title?.replace(/\s*\(\d{4}\)\s*$/, '').trim() || s.title;
+              const linkTo = isPlaceholder
+                ? `/Search?q=${encodeURIComponent(searchQ)}`
+                : `/SeriesDetail?id=${s.id}`;
+              return (
               <motion.div key={s.id} layout initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                <Link to={`/SeriesDetail?id=${s.id}`} className="group block">
+                <Link to={linkTo} className="group block">
                   <div className="aspect-[2/3] rounded-lg overflow-hidden bg-[#1A242F] relative">
-                    {s.content_type === 'movie' && (
+                    {isPlaceholder && (
+                      <span className="absolute top-2 left-2 z-[1] text-[10px] uppercase tracking-wide px-1.5 py-0.5 rounded bg-black/75 text-[#00A8E1]">Sugerido</span>
+                    )}
+                    {!isPlaceholder && s.content_type === 'movie' && (
                       <span className="absolute top-2 left-2 z-[1] text-[10px] uppercase tracking-wide px-1.5 py-0.5 rounded bg-black/70 text-white">Filme</span>
                     )}
                     {s.cover_url ? (
@@ -115,7 +150,8 @@ export default function Browse() {
                   </div>
                 </Link>
               </motion.div>
-            ))}
+            );
+            })}
           </motion.div>
         )}
 
