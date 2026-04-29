@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Key, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 import { appParams } from '@/lib/app-params';
+import BrandWordmark from '@/components/BrandWordmark';
 
 const hasValidBase44AppId = (appId) => Boolean(appId && appId !== 'null' && appId !== 'undefined');
 
@@ -80,8 +81,7 @@ export default function ActivateCode() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-black mb-2">
-            <span className="text-[#0057FF]">Cristo</span>
-            <span className="text-white">Fy</span>
+            <BrandWordmark className="text-3xl" />
           </h1>
           <p className="text-gray-400">Ative sua conta com um código de acesso</p>
         </div>

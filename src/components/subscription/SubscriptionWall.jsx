@@ -1,6 +1,7 @@
 import React from 'react';
 import { Crown, Lock, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import BrandWordmark from '@/components/BrandWordmark';
 
 export default function SubscriptionWall({ isTrial = false, daysLeft = 0 }) {
   const navigate = useNavigate();
@@ -10,8 +11,7 @@ export default function SubscriptionWall({ isTrial = false, daysLeft = 0 }) {
       <div className="max-w-md w-full text-center">
         {/* Logo */}
         <h1 className="text-3xl font-black mb-8">
-          <span className="text-[#0057FF]">Cristo</span>
-          <span className="text-white">Fy</span>
+          <BrandWordmark className="text-3xl" />
         </h1>
 
         <div className="bg-[#1A1A1A] border border-white/10 rounded-2xl p-8 shadow-2xl">

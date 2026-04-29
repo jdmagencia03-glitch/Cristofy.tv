@@ -9,6 +9,7 @@ import { useAuth } from '@/lib/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Loader2 } from 'lucide-react';
+import BrandWordmark from '@/components/BrandWordmark';
 
 export default function Login() {
 	const { isAuthenticated } = useAuth();
@@ -62,8 +63,7 @@ export default function Login() {
 			<div className="w-full max-w-md">
 				<div className="text-center mb-8">
 					<h1 className="text-3xl font-black mb-2">
-						<span className="text-[#0057FF]">Cristo</span>
-						<span className="text-white">Fy</span>
+						<BrandWordmark className="text-3xl" />
 					</h1>
 					<p className="text-gray-400">
 						{mode === 'login' ? 'Entre com sua conta' : 'Crie sua conta'}

@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { Check, Star, Zap, Crown, Loader2, ArrowLeft, Calendar, AlertTriangle, Ban } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import CheckoutModal from '@/components/subscription/CheckoutModal';
+import BrandWordmark from '@/components/BrandWordmark';
 
 const hasValidBase44AppId = (appId) => Boolean(appId && appId !== 'null' && appId !== 'undefined');
 
@@ -137,8 +138,7 @@ export default function Subscription() {
           </button>
           <div>
             <h1 className="text-3xl font-black">
-              <span className="text-[#0057FF]">Cristo</span>
-              <span className="text-white">Fy</span>
+              <BrandWordmark className="text-3xl" />
               <span className="text-white"> Premium</span>
             </h1>
             <p className="text-gray-400 mt-1">Escolha o plano ideal para você</p>

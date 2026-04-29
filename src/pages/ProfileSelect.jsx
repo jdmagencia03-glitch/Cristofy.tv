@@ -19,6 +19,7 @@ import { Switch } from '@/components/ui/switch';
 import { toast } from '@/components/ui/use-toast';
 import { appParams } from '@/lib/app-params';
 import { motion, AnimatePresence } from 'framer-motion';
+import BrandWordmark from '@/components/BrandWordmark';
 
 const LOCAL_PREVIEW_EMAIL = 'preview-local@localhost';
 const LOCAL_PROFILES_KEY = 'desenhos_local_preview_profiles';
@@ -531,9 +532,8 @@ export default function ProfileSelect() {
   return (
     <div className="min-h-screen bg-[#141414] flex flex-col items-center justify-center p-4">
       <div className="mb-12 text-center">
-        <div className="mb-8 text-4xl md:text-5xl font-black tracking-tight">
-          <span className="text-[#0057FF]">Cristo</span>
-          <span className="text-white">Fy</span>
+        <div className="mb-8">
+          <BrandWordmark className="text-4xl md:text-5xl" />
         </div>
         <h1 className="text-3xl md:text-4xl font-semibold text-white">Quem está assistindo?</h1>
       </div>
