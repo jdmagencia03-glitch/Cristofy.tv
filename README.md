@@ -28,6 +28,44 @@ VITE_BASE44_APP_BASE_URL=https://my-to-do-list-81bfaad7.base44.app
 
 Run the app: `npm run dev`
 
+## Configuração de Assinaturas (Firebase + Asaas)
+
+O checkout usa Firebase Cloud Functions para criar cobranças no Asaas e atualizar status da assinatura no Firestore.
+
+### 1) Deploy das Cloud Functions
+
+No diretório `functions/`:
+
+```bash
+npm install
+firebase deploy --only functions
+```
+
+### 2) Variáveis nas Cloud Functions
+
+Configure no ambiente das functions:
+
+- `ASAAS_API_KEY` = sua chave da API no Asaas
+- `ASAAS_BASE_URL` = `https://api-sandbox.asaas.com/v3` (sandbox) ou `https://api.asaas.com/v3` (produção)
+- `ASAAS_WEBHOOK_TOKEN` = token secreto para validar webhook
+
+### 3) Variáveis do frontend
+
+- `VITE_FIREBASE_FUNCTIONS_BASE_URL` = base URL das functions (sem barra no final)
+  - Ex: `https://southamerica-east1-SEU_PROJETO.cloudfunctions.net`
+- `VITE_SUBSCRIPTION_BASE44_FALLBACK` = `true` (cutover gradual) ou `false` (Firebase-only)
+
+### 4) Webhook no Asaas
+
+- URL: `${VITE_FIREBASE_FUNCTIONS_BASE_URL}/handleAbacatepayWebhook`
+- Token: mesmo valor de `ASAAS_WEBHOOK_TOKEN`
+- Eventos:
+  - `PAYMENT_RECEIVED`
+  - `PAYMENT_CONFIRMED`
+  - `PAYMENT_OVERDUE`
+  - `PAYMENT_REFUNDED`
+  - `PAYMENT_DELETED`
+
 **Publish your changes**
 
 Open [Base44.com](http://Base44.com) and click on Publish.

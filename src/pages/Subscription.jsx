@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
-import { appParams } from '@/lib/app-params';
+import { getMySubscription, cancelSubscription as cancelSubscriptionApi } from '@/api/subscriptionApi';
 import { useNavigate } from 'react-router-dom';
 import { Check, Star, Zap, Crown, Loader2, ArrowLeft, Calendar, AlertTriangle, Ban } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import CheckoutModal from '@/components/subscription/CheckoutModal';
 import BrandWordmark from '@/components/BrandWordmark';
-
-const hasValidBase44AppId = (appId) => Boolean(appId && appId !== 'null' && appId !== 'undefined');
 
 const PLANS = [
   {
@@ -69,7 +66,6 @@ const STATUS_CONFIG = {
 
 export default function Subscription() {
   const navigate = useNavigate();
-  const isLocalPreview = !hasValidBase44AppId(appParams.appId);
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [currentSubscription, setCurrentSubscription] = useState(null);
@@ -82,15 +78,9 @@ export default function Subscription() {
   const loadSubscription = async () => {
     setLoadingStatus(true);
 
-    if (isLocalPreview) {
-      setCurrentSubscription(null);
-      setLoadingStatus(false);
-      return;
-    }
-
     try {
-      const res = await base44.functions.invoke('getMySubscription', {});
-      setCurrentSubscription(res.data);
+      const data = await getMySubscription();
+      setCurrentSubscription(data);
     } catch (error) {
       console.error('Failed to load subscription:', error);
       setCurrentSubscription(null);
@@ -112,7 +102,7 @@ export default function Subscription() {
   const handleCancel = async () => {
     if (!cancelConfirm) { setCancelConfirm(true); return; }
     setCancelLoading(true);
-    await base44.functions.invoke('cancelSubscription', {
+    await cancelSubscriptionApi({
       subscription_id: currentSubscription.subscription.id,
     });
     setCancelLoading(false);

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { base44 } from '@/api/base44Client';
+import { createSubscriptionBilling } from '@/api/subscriptionApi';
 import { X, CreditCard, QrCode, Loader2, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -27,17 +27,17 @@ export default function CheckoutModal({ plan, onClose, onSuccess }) {
     setStep("processing");
 
     try {
-      const res = await base44.functions.invoke("createAbacatepayBilling", {
+      const res = await createSubscriptionBilling({
         plan: plan.id,
         payment_method: method,
         customer: { name: form.name, cpf: form.cpf, phone: form.phone },
       });
 
-      if (res.data?.billing_url) {
-        setBillingUrl(res.data.billing_url);
+      if (res?.billing_url) {
+        setBillingUrl(res.billing_url);
         setStep("done");
       } else {
-        setError(res.data?.error || "Erro ao processar pagamento.");
+        setError(res?.error || "Erro ao processar pagamento.");
         setStep("form");
       }
     } catch (error) {
@@ -143,7 +143,7 @@ export default function CheckoutModal({ plan, onClose, onSuccess }) {
               </div>
               <div>
                 <p className="text-white font-bold text-lg">Cobrança gerada!</p>
-                <p className="text-gray-400 text-sm mt-1">Clique abaixo para pagar via AbacatePay. Após o pagamento, sua assinatura será ativada automaticamente.</p>
+                <p className="text-gray-400 text-sm mt-1">Clique abaixo para pagar via Asaas. Após o pagamento, sua assinatura será ativada automaticamente.</p>
               </div>
               <a
                 href={billingUrl}

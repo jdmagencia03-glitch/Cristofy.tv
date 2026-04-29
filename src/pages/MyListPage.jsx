@@ -1,7 +1,9 @@
 import React, { useMemo } from 'react';
 import { base44 } from '@/api/base44Client';
 import { catalogUsesFirestore, listPublishedSeries } from '@/api/catalog';
+import { listMyList as listMyListFs, removeMyListById as removeMyListByIdFs } from '@/api/userDataFirestore';
 import * as userLib from '@/lib/userLibrary';
+import { useAuth } from '@/lib/AuthContext';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { Play, X, Heart } from 'lucide-react';
@@ -9,6 +11,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 export default function MyListPage() {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const activeProfile = JSON.parse(localStorage.getItem('desenhos_active_profile') || 'null');
   const fsCatalog = catalogUsesFirestore();
 
@@ -16,6 +19,7 @@ export default function MyListPage() {
     queryKey: ['myList', activeProfile?.id],
     queryFn: () => {
       if (!activeProfile?.id) return [];
+      if (fsCatalog && user?.uid) return listMyListFs(user.uid, activeProfile.id);
       if (fsCatalog) return Promise.resolve(userLib.getMyList(activeProfile.id));
       return base44.entities.MyList.filter({ profile_id: activeProfile.id });
     },
@@ -29,6 +33,7 @@ export default function MyListPage() {
 
   const removeMut = useMutation({
     mutationFn: (itemId) => {
+      if (fsCatalog && user?.uid) return removeMyListByIdFs(user.uid, activeProfile.id, itemId);
       if (fsCatalog) {
         userLib.removeMyListById(activeProfile.id, itemId);
         return Promise.resolve();

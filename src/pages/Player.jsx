@@ -6,7 +6,12 @@ import {
   getSeriesById,
   listEpisodesBySeries,
 } from '@/api/catalog';
+import {
+  listWatchHistoryByEpisode as listWatchHistoryByEpisodeFs,
+  upsertWatchHistory as upsertWatchHistoryFs,
+} from '@/api/userDataFirestore';
 import * as userLib from '@/lib/userLibrary';
+import { useAuth } from '@/lib/AuthContext';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Play, SkipForward, List, X } from 'lucide-react';
@@ -48,6 +53,7 @@ export default function Player() {
   const episodeId = params.get('episodeId');
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const activeProfile = JSON.parse(localStorage.getItem('desenhos_active_profile') || 'null');
   const fsCatalog = catalogUsesFirestore();
   const progressInterval = useRef(null);
@@ -76,6 +82,7 @@ export default function Player() {
     queryKey: ['watchHistoryEp', activeProfile?.id, episodeId],
     queryFn: () => {
       if (!activeProfile?.id || !episodeId) return [];
+      if (fsCatalog && user?.uid) return listWatchHistoryByEpisodeFs(user.uid, activeProfile.id, episodeId);
       if (fsCatalog) return Promise.resolve(userLib.getWatchHistoryByEpisode(activeProfile.id, episodeId));
       return base44.entities.WatchHistory.filter({ profile_id: activeProfile.id, episode_id: episodeId });
     },
@@ -85,6 +92,15 @@ export default function Player() {
   const saveHistoryMut = useMutation({
     mutationFn: async (data) => {
       if (fsCatalog) {
+        if (user?.uid) {
+          await upsertWatchHistoryFs(user.uid, activeProfile.id, {
+            profile_id: activeProfile.id,
+            episode_id: episodeId,
+            series_id: episode?.series_id,
+            ...data,
+          });
+          return;
+        }
         userLib.upsertWatchHistory(activeProfile.id, {
           profile_id: activeProfile.id,
           episode_id: episodeId,

@@ -1,6 +1,14 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
 
 Deno.serve(async (req) => {
+  const webhookToken = Deno.env.get("ASAAS_WEBHOOK_TOKEN");
+  if (webhookToken) {
+    const incoming = req.headers.get("asaas-access-token");
+    if (!incoming || incoming !== webhookToken) {
+      return Response.json({ error: "Unauthorized webhook" }, { status: 401 });
+    }
+  }
+
   const base44 = createClientFromRequest(req);
 
   let body;
@@ -10,15 +18,21 @@ Deno.serve(async (req) => {
     return Response.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  // AbacatePay v1 webhook payload: { event, billing }
+  // Asaas webhook payload: { event, payment, ... }
   const event = body?.event;
-  const billing = body?.billing;
+  const payment = body?.payment;
+  const paymentId = payment?.id || body?.id;
 
-  if (!billing?.id) return Response.json({ ok: true });
+  if (!paymentId) return Response.json({ ok: true });
 
-  const subscriptions = await base44.asServiceRole.entities.Subscription.filter({
-    abacatepay_billing_id: billing.id,
+  let subscriptions = await base44.asServiceRole.entities.Subscription.filter({
+    asaas_payment_id: paymentId,
   });
+  if (!subscriptions || subscriptions.length === 0) {
+    subscriptions = await base44.asServiceRole.entities.Subscription.filter({
+      abacatepay_billing_id: paymentId,
+    });
+  }
 
   if (!subscriptions || subscriptions.length === 0) {
     return Response.json({ ok: true, message: "Subscription not found" });
@@ -28,14 +42,24 @@ Deno.serve(async (req) => {
 
   let newStatus = subscription.status;
 
-  // Eventos AbacatePay: billing.paid, billing.cancelled, billing.expired, billing.refunded
-  if (event === "billing.paid" || billing.status === "PAID") {
+  // Eventos/status Asaas
+  if (
+    event === "PAYMENT_RECEIVED" ||
+    event === "PAYMENT_CONFIRMED" ||
+    payment?.status === "RECEIVED" ||
+    payment?.status === "CONFIRMED" ||
+    payment?.status === "RECEIVED_IN_CASH"
+  ) {
     newStatus = "active";
-  } else if (event === "billing.cancelled" || billing.status === "CANCELLED") {
+  } else if (
+    event === "PAYMENT_DELETED" ||
+    payment?.status === "DELETED" ||
+    payment?.status === "REFUNDED"
+  ) {
     newStatus = "cancelled";
-  } else if (event === "billing.expired" || billing.status === "EXPIRED") {
+  } else if (event === "PAYMENT_OVERDUE" || payment?.status === "OVERDUE") {
     newStatus = "expired";
-  } else if (event === "billing.refunded" || billing.status === "REFUNDED") {
+  } else if (event === "PAYMENT_REFUNDED") {
     newStatus = "cancelled";
   }
 

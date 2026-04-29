@@ -6,9 +6,18 @@ import {
   listFeaturedBannersHome,
   listPublishedSeries,
 } from '@/api/catalog';
+import {
+  addMyListItem as addMyListItemFs,
+  listMyList as listMyListFs,
+  listWatchHistory as listWatchHistoryFs,
+  removeMyListBySeries as removeMyListBySeriesFs,
+  seedMyListFromLegacy,
+  seedWatchHistoryFromLegacy,
+} from '@/api/userDataFirestore';
 import * as userLib from '@/lib/userLibrary';
 import { CURATED_CATEGORY_LABELS, resolveCuratedItems } from '@/lib/christianCurated';
 import { CHRISTIAN_CURATED_CATEGORIES } from '@/data/christianCuratedCatalog';
+import { useAuth } from '@/lib/AuthContext';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import HeroBanner from '../components/home/HeroBanner';
 import SeriesCarousel from '../components/home/SeriesCarousel';
@@ -16,6 +25,7 @@ import ContinueWatching from '../components/home/ContinueWatching';
 
 export default function Home() {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const activeProfile = JSON.parse(localStorage.getItem('desenhos_active_profile') || 'null');
   const fsCatalog = catalogUsesFirestore();
 
@@ -36,18 +46,31 @@ export default function Home() {
 
   const { data: myListItems = [] } = useQuery({
     queryKey: ['myList', activeProfile?.id],
-    queryFn: () => {
+    queryFn: async () => {
       if (!activeProfile?.id) return [];
+      if (fsCatalog && user?.uid) {
+        const list = await listMyListFs(user.uid, activeProfile.id);
+        if (list.length > 0) return list;
+        const legacy = userLib.getMyList(activeProfile.id);
+        return seedMyListFromLegacy(user.uid, activeProfile.id, legacy);
+      }
       if (fsCatalog) return Promise.resolve(userLib.getMyList(activeProfile.id));
       return base44.entities.MyList.filter({ profile_id: activeProfile.id });
     },
-    enabled: !!activeProfile?.id,
+    enabled: !!activeProfile?.id && (fsCatalog ? !!user?.uid || !user?.uid : true),
   });
 
   const { data: history = [] } = useQuery({
     queryKey: ['watchHistory', activeProfile?.id],
-    queryFn: () => {
+    queryFn: async () => {
       if (!activeProfile?.id) return [];
+      if (fsCatalog && user?.uid) {
+        const hist = await listWatchHistoryFs(user.uid, activeProfile.id, 20);
+        if (hist.length > 0) return hist;
+        const legacy = userLib.getWatchHistory(activeProfile.id, 2000);
+        const seeded = await seedWatchHistoryFromLegacy(user.uid, activeProfile.id, legacy);
+        return seeded.slice(0, 20);
+      }
       if (fsCatalog) return Promise.resolve(userLib.getWatchHistory(activeProfile.id, 20));
       return base44.entities.WatchHistory.filter({ profile_id: activeProfile.id }, '-updated_date', 20);
     },
@@ -56,6 +79,9 @@ export default function Home() {
 
   const addToListMut = useMutation({
     mutationFn: (seriesId) => {
+      if (fsCatalog && user?.uid) {
+        return addMyListItemFs(user.uid, activeProfile.id, seriesId);
+      }
       if (fsCatalog) {
         userLib.addMyListItem(activeProfile.id, seriesId);
         return Promise.resolve();
@@ -77,6 +103,10 @@ export default function Home() {
 
   const removeFromListMut = useMutation({
     mutationFn: async (seriesId) => {
+      if (fsCatalog && user?.uid) {
+        await removeMyListBySeriesFs(user.uid, activeProfile.id, seriesId);
+        return;
+      }
       if (fsCatalog) {
         userLib.removeMyListBySeries(activeProfile.id, seriesId);
         return;

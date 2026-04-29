@@ -44,6 +44,14 @@
       "type": "string",
       "description": "ID do cliente na AbacatePay"
     },
+    "asaas_payment_id": {
+      "type": "string",
+      "description": "ID da cobrança/pagamento na Asaas"
+    },
+    "asaas_customer_id": {
+      "type": "string",
+      "description": "ID do cliente na Asaas"
+    },
     "starts_at": {
       "type": "string",
       "format": "date-time",

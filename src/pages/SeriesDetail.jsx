@@ -5,7 +5,15 @@ import {
   getSeriesById,
   listEpisodesBySeries,
 } from '@/api/catalog';
+import {
+  addMyListItem as addMyListItemFs,
+  listMyList as listMyListFs,
+  listWatchHistoryBySeries as listWatchHistoryBySeriesFs,
+  removeMyListBySeries as removeMyListBySeriesFs,
+  upsertWatchHistory as upsertWatchHistoryFs,
+} from '@/api/userDataFirestore';
 import * as userLib from '@/lib/userLibrary';
+import { useAuth } from '@/lib/AuthContext';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { Play, Plus, Check, CheckCircle2, Lock } from 'lucide-react';
@@ -16,6 +24,7 @@ export default function SeriesDetail() {
   const params = new URLSearchParams(window.location.search);
   const seriesId = params.get('id');
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const activeProfile = JSON.parse(localStorage.getItem('desenhos_active_profile') || 'null');
   const [selectedSeason, setSelectedSeason] = useState(1);
   const fsCatalog = catalogUsesFirestore();
@@ -36,6 +45,7 @@ export default function SeriesDetail() {
     queryKey: ['myList', activeProfile?.id],
     queryFn: () => {
       if (!activeProfile?.id) return [];
+      if (fsCatalog && user?.uid) return listMyListFs(user.uid, activeProfile.id);
       if (fsCatalog) return Promise.resolve(userLib.getMyList(activeProfile.id));
       return base44.entities.MyList.filter({ profile_id: activeProfile.id });
     },
@@ -46,6 +56,7 @@ export default function SeriesDetail() {
     queryKey: ['watchHistory', activeProfile?.id, seriesId],
     queryFn: () => {
       if (!activeProfile?.id || !seriesId) return [];
+      if (fsCatalog && user?.uid) return listWatchHistoryBySeriesFs(user.uid, activeProfile.id, seriesId);
       if (fsCatalog) return Promise.resolve(userLib.getWatchHistoryBySeries(activeProfile.id, seriesId));
       return base44.entities.WatchHistory.filter({ profile_id: activeProfile.id, series_id: seriesId });
     },
@@ -56,6 +67,7 @@ export default function SeriesDetail() {
 
   const addMut = useMutation({
     mutationFn: () => {
+      if (fsCatalog && user?.uid) return addMyListItemFs(user.uid, activeProfile.id, seriesId);
       if (fsCatalog) {
         userLib.addMyListItem(activeProfile.id, seriesId);
         return Promise.resolve();
@@ -67,6 +79,10 @@ export default function SeriesDetail() {
 
   const removeMut = useMutation({
     mutationFn: async () => {
+      if (fsCatalog && user?.uid) {
+        await removeMyListBySeriesFs(user.uid, activeProfile.id, seriesId);
+        return;
+      }
       if (fsCatalog) {
         userLib.removeMyListBySeries(activeProfile.id, seriesId);
         return;
@@ -109,6 +125,18 @@ export default function SeriesDetail() {
     mutationFn: async (ep) => {
       const existing = history.find(h => h.episode_id === ep.id);
       if (fsCatalog) {
+        if (user?.uid) {
+          const completed = !existing?.completed;
+          await upsertWatchHistoryFs(user.uid, activeProfile.id, {
+            profile_id: activeProfile.id,
+            episode_id: ep.id,
+            series_id: seriesId,
+            watched_seconds: completed ? (ep.duration || 0) : (existing?.watched_seconds || 0),
+            total_duration: ep.duration || 0,
+            completed,
+          });
+          return;
+        }
         const completed = !existing?.completed;
         userLib.upsertWatchHistory(activeProfile.id, {
           profile_id: activeProfile.id,

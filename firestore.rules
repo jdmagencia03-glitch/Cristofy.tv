@@ -17,6 +17,25 @@ service cloud.firestore {
       allow read, create, update, delete: if isOwner(userId);
     }
 
+    // Dados do perfil usados na experiência do player/lista.
+    match /users/{userId}/profiles/{profileId}/my_list/{itemId} {
+      allow read, create, update, delete: if isOwner(userId);
+    }
+
+    match /users/{userId}/profiles/{profileId}/watch_history/{historyId} {
+      allow read, create, update, delete: if isOwner(userId);
+    }
+
+    // Assinaturas: leitura pelo próprio usuário; escrita apenas via backend (Admin SDK).
+    match /subscriptions/{subscriptionId} {
+      allow read: if isSignedIn() &&
+        (
+          resource.data.user_uid == request.auth.uid ||
+          resource.data.user_email == request.auth.token.email
+        );
+      allow create, update, delete: if false;
+    }
+
     // Catálogo público.
     match /series/{seriesId} {
       allow read: if true;
