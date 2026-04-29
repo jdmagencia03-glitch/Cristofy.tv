@@ -53,17 +53,7 @@ export default function AdminDashboard() {
     { label: 'Episódios', value: episodes.length, icon: Film, color: 'from-blue-500 to-blue-700', link: '/AdminSeries' },
     { label: 'Usuários', value: users.length, icon: Users, color: 'from-green-500 to-green-700', link: '/AdminUsers' },
     { label: 'Códigos', value: `${usedCodes.length}/${codes.length}`, icon: Key, color: 'from-yellow-500 to-yellow-700', link: '/AdminCodes' },
-  ].filter((item) => !fsCatalog || (item.link !== '/AdminUsers' && item.link !== '/AdminCodes'));
-
-  const quickAccessItems = [
-    { label: 'Dashboard de Métricas', to: '/AdminMetrics', icon: BarChart3, legacy: true },
-    { label: 'Banner Principal (Destaques)', to: '/AdminBanner', icon: LayoutDashboard, legacy: false },
-    { label: 'Gerenciar Séries & Episódios', to: '/AdminSeries', icon: Tv, legacy: false },
-    { label: 'Gerenciar Usuários', to: '/AdminUsers', icon: Users, legacy: true },
-    { label: 'Códigos de Acesso', to: '/AdminCodes', icon: Key, legacy: true },
-    { label: 'Propostas de Conteúdo', to: '/AdminProposals', icon: Lightbulb, legacy: true },
-    { label: 'Gerenciar Avatares', to: '/AdminAvatars', icon: Smile, legacy: true },
-  ].filter((item) => !fsCatalog || !item.legacy);
+  ];
 
   return (
     <div className="min-h-screen bg-[#0F0F0F] pt-20 md:pt-24 px-4 md:px-12">
@@ -115,7 +105,15 @@ export default function AdminDashboard() {
         <div className="grid md:grid-cols-2 gap-6">
           <div className="space-y-3">
             <h2 className="text-lg font-bold mb-3">Acesso Rápido</h2>
-            {quickAccessItems.map(item => (
+            {[
+              { label: 'Dashboard de Métricas', to: '/AdminMetrics', icon: BarChart3 },
+              { label: 'Banner Principal (Destaques)', to: '/AdminBanner', icon: LayoutDashboard },
+              { label: 'Gerenciar Séries & Episódios', to: '/AdminSeries', icon: Tv },
+              { label: 'Gerenciar Usuários', to: '/AdminUsers', icon: Users },
+              { label: 'Códigos de Acesso', to: '/AdminCodes', icon: Key },
+              { label: 'Propostas de Conteúdo', to: '/AdminProposals', icon: Lightbulb },
+              { label: 'Gerenciar Avatares', to: '/AdminAvatars', icon: Smile },
+            ].map(item => (
               <Link
                 key={item.to}
                 to={item.to}

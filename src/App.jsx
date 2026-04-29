@@ -1,7 +1,6 @@
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
-import { catalogUsesFirestore } from '@/api/catalog';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
@@ -33,7 +32,6 @@ import Login from './pages/Login';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, isAuthenticated } = useAuth();
-  const isFirestoreCatalog = catalogUsesFirestore();
 
   if (authError?.type === 'firebase_not_configured') {
     return (
@@ -96,13 +94,13 @@ const AuthenticatedApp = () => {
         <Route path="/Admin" element={<AdminDashboard />} />
         <Route path="/AdminSeries" element={<AdminSeries />} />
         <Route path="/AdminEpisodes" element={<AdminEpisodes />} />
-        <Route path="/AdminUsers" element={isFirestoreCatalog ? <Navigate to="/Admin" replace /> : <AdminUsers />} />
-        <Route path="/AdminCodes" element={isFirestoreCatalog ? <Navigate to="/Admin" replace /> : <AdminCodes />} />
-        <Route path="/AdminProposals" element={isFirestoreCatalog ? <Navigate to="/Admin" replace /> : <AdminProposals />} />
-        <Route path="/AdminAvatars" element={isFirestoreCatalog ? <Navigate to="/Admin" replace /> : <AdminAvatars />} />
+        <Route path="/AdminUsers" element={<AdminUsers />} />
+        <Route path="/AdminCodes" element={<AdminCodes />} />
+        <Route path="/AdminProposals" element={<AdminProposals />} />
+        <Route path="/AdminAvatars" element={<AdminAvatars />} />
         <Route path="/AdminEpisodeCreator" element={<AdminEpisodeCreator />} />
         <Route path="/AdminSubscriptions" element={<AdminSubscriptions />} />
-        <Route path="/AdminMetrics" element={isFirestoreCatalog ? <Navigate to="/Admin" replace /> : <AdminMetrics />} />
+        <Route path="/AdminMetrics" element={<AdminMetrics />} />
         <Route path="/AdminBanner" element={<AdminBanner />} />
       </Route>
       
